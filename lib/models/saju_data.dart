@@ -1,3 +1,4 @@
+//lib/models/saju_data.dart
 class SajuData {
   final String year;
   final String month;
