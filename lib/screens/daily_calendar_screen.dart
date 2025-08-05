@@ -159,7 +159,7 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
       decoration: BoxDecoration(
         color: isToday ? Colors.white.withValues(alpha: 0.12) : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
-        border: isToday ? Border.all(color: Colors.white, width: 1.4) : null,
+        border: isToday ? Border.all(color: Colors.black87, width: 1.4) : null,
       ),
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
