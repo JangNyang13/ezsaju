@@ -5,8 +5,8 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("설정")),
+    return Scaffold(
+      body: const Center(child: Text('세팅')),
     );
   }
 }
