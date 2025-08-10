@@ -1,9 +1,12 @@
-import 'package:ezsaju/screens/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'constants/themes.dart';
+import 'screens/main_navigation_screen.dart';
 
 void main() {
-  runApp(const EZSajuApp());
+  runApp(const ProviderScope(child: EZSajuApp()));
 }
 
 class EZSajuApp extends StatelessWidget {
@@ -12,8 +15,7 @@ class EZSajuApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'EZ-Saju',
-      // ✅ 한글 로캘 등록
+      title: 'EZ‑Saju',
       locale: const Locale('ko', 'KR'),
       supportedLocales: const [
         Locale('ko', 'KR'),
@@ -24,7 +26,11 @@ class EZSajuApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: MainNavigationScreen(),
+
+      // ✅ 다크모드 제거 → 라이트 테마만 적용
+      theme: AppTheme.light(),
+
+      home: const MainNavigationScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

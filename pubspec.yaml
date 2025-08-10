@@ -41,6 +41,9 @@ dependencies:
   path_provider: ^2.1.5
   collection: ^1.19.1
   table_calendar: ^3.2.0
+  shared_preferences: ^2.5.3
+  flutter_riverpod: ^2.6.1
+  water_drop_nav_bar: ^2.2.2
 
 dev_dependencies:
   flutter_test:
@@ -84,21 +87,34 @@ flutter:
   fonts:
     - family: NotoSansKR
       fonts:
-        - asset: assets/fonts/NotoSansKR/NotoSansKR-VariableFont_wght.ttf
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/NotoSansKR/NotoSansKR-Black.ttf
+          weight: 900
     - family: SourceHanSansSC
       fonts:
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-ExtraLight-2.otf
-          weight: 200
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Light-2.otf
-          weight: 300
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Normal-2.otf
-          weight: 400
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Medium-2.otf
-          weight: 500
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Bold-2.otf
-          weight: 700
-        - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Heavy-2.otf
-          weight: 900
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-ExtraLight-2.otf
+        weight: 200
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Light-2.otf
+        weight: 300
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Normal-2.otf
+        weight: 400
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Medium-2.otf
+        weight: 500
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Bold-2.otf
+        weight: 700
+      - asset: assets/fonts/SourceHanSansSC/SourceHanSansSC-Heavy-2.otf
+        weight: 900
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

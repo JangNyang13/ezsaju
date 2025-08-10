@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../constants/text_styles.dart';
 import '../services/manse_loader.dart';
 import '../constants/ganji_color_mappings.dart';
 
@@ -114,10 +115,10 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
           GestureDetector(
             onTap: _pickYearMonth,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
                 '${_focusedDay.year}년 ${_focusedDay.month}월',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                style: AppTextStyles.titleLarge,
               ),
             ),
           ),
@@ -129,8 +130,8 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
               lastDay: DateTime(2100, 12, 31),
               focusedDay: _focusedDay,
               calendarFormat: CalendarFormat.month,
-              rowHeight: 86,
-              daysOfWeekHeight: 22,
+              rowHeight: 90,
+              daysOfWeekHeight: 20,
               startingDayOfWeek: StartingDayOfWeek.sunday,
               onPageChanged: (d) => setState(() => _focusedDay = d),
               calendarBuilders: CalendarBuilders(
@@ -159,14 +160,14 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
       decoration: BoxDecoration(
         color: isToday ? Colors.white.withValues(alpha: 0.12) : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
-        border: isToday ? Border.all(color: Colors.black87, width: 1.4) : null,
+        border: isToday ? Border.all(color: Colors.black87, width: 1) : null,
       ),
       margin: const EdgeInsets.all(4),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${day.day}', style: const TextStyle(color: Colors.black87, fontSize: 13)),
+          Text('${day.day}', style: const TextStyle(color: Colors.black87, fontSize: 15)),
           Row(children: [ _charBox(ganji[0]), const SizedBox(width: 2), _charBox(ganji[1]) ]),
           Padding(
             padding: const EdgeInsets.only(top: 2),
@@ -188,7 +189,7 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
       decoration: BoxDecoration(color: colorOfGanjiChar(ch), borderRadius: BorderRadius.circular(3)),
       child: Text(
         ch,
-        style: const TextStyle(fontFamily: 'SourceHanSansSC', fontSize: 12, color: Colors.white),
+        style: const TextStyle(fontFamily: 'SourceHanSansSC', fontSize: 15, color: Colors.white),
       ),
     );
   }

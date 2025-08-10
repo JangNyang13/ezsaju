@@ -1,26 +1,34 @@
-//lib/constants/text_styles.dart
+// lib/constants/text_styles.dart
 import 'package:flutter/material.dart';
 
-/// 폰트는 pubspec.yaml 에 등록된 `NotoSansKR` 를 기본으로 사용
 class AppTextStyles {
-  static const String _fontFamily = 'NotoSansKR';
+  static const String fontFamily = 'NotoSansKR';
 
-  static TextStyle get headline => const TextStyle(
-    fontFamily: _fontFamily,
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
+  static const TextStyle titleLarge = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 24,
+    fontWeight: FontWeight.w700,
   );
 
-  static TextStyle get body => const TextStyle(
-    fontFamily: _fontFamily,
+  static const TextStyle body = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 16,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w300,
   );
 
-  static TextStyle get caption => const TextStyle(
-    fontFamily: _fontFamily,
+  static const TextStyle caption = TextStyle(
+    fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w300,
   );
 
+  // ✅ 헬퍼: 색상/굵기 적용
+  static TextStyle bodyW500(Color color) =>
+      body.copyWith(color: color, fontWeight: FontWeight.w500);
+
+  static TextStyle captionW500(Color color) =>
+      caption.copyWith(color: color, fontWeight: FontWeight.w500);
+
+  static TextStyle titleLargeColor(Color color) =>
+      titleLarge.copyWith(color: color);
 }

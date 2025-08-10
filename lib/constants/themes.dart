@@ -1,64 +1,78 @@
-//lib/constants/themes.dart
+// lib/constants/themes.dart
+// --------------------------------------------------------------
+// Custom Theme – unified black text + slightly thicker body font
+//   • primary    : 청록 (#008080)
+//   • secondary  : 황금 (#FFC107)
+//   • background : 연미색 (#FAF9F6)
+//   • 모든 본문 텍스트 색상 = 검정, weight = w500
+// --------------------------------------------------------------
+
 import 'package:flutter/material.dart';
 import 'colors.dart';
 import 'text_styles.dart';
 
 class AppTheme {
-  /// Light Theme
+  /// ✅ Light Theme (앱 전체에서 사용)
   static ThemeData light() {
-    // Material 3 권장: seedColor 로 컬러스킴 생성
-    final colorScheme = ColorScheme.fromSeed(
+    const colorScheme = ColorScheme(
       brightness: Brightness.light,
-      seedColor: AppColors.primary,
-    ).copyWith(
+      primary: AppColors.primary,
+      onPrimary: Colors.white,
       secondary: AppColors.secondary,
+      onSecondary: Colors.black,
+      error: AppColors.error,
+      onError: Colors.white,
+      surface: AppColors.surface,
+      onSurface: Colors.black, // 통일: pure black
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-
-      // scaffold 배경은 surface(또는 직접 색 지정) 사용
       scaffoldBackgroundColor: colorScheme.surface,
 
-      // AppBar
+      /// AppBar
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         elevation: 0,
-        titleTextStyle: AppTextStyles.headline.copyWith(
-          color: colorScheme.onPrimary,
+        titleTextStyle: AppTextStyles.titleLargeColor(colorScheme.onPrimary),
+      ),
+
+      /// Material3 NavigationBar
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: colorScheme.surface,
+        indicatorColor: colorScheme.primary.withValues(alpha: 0.08),
+        iconTheme: WidgetStateProperty.all(IconThemeData(color: colorScheme.primary)),
+        labelTextStyle: WidgetStateProperty.all(
+          AppTextStyles.captionW500(colorScheme.onSurface),
         ),
       ),
 
-      // Text
-      textTheme: TextTheme(
-        bodyLarge: AppTextStyles.body.apply(color: colorScheme.onSurface),
-        bodyMedium: AppTextStyles.caption.apply(color: colorScheme.onSurface),
+      /// BottomNavigationBar (Material2 호환)
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: colorScheme.surface,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: Colors.black,
+        selectedLabelStyle: AppTextStyles.captionW500(Colors.black),
+        unselectedLabelStyle: AppTextStyles.captionW500(Colors.black),
       ),
 
-      // CardThemeData 사용
+      /* Card */
       cardTheme: CardThemeData(
         color: colorScheme.surface,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
 
+      /// Text Theme
+      textTheme: TextTheme(
+        bodyLarge: AppTextStyles.bodyW500(Colors.black),
+        bodyMedium: AppTextStyles.captionW500(Colors.black),
+      ),
+
+      /// Default Icon Theme
       iconTheme: IconThemeData(color: colorScheme.primary),
-    );
-  }
-
-  /// Dark Theme
-  static ThemeData dark() {
-    final base = ThemeData.dark(useMaterial3: true);
-    return base.copyWith(
-      colorScheme: base.colorScheme.copyWith(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-      ),
-      textTheme: base.textTheme.apply(fontFamily: 'NotoSansKR'),
     );
   }
 }

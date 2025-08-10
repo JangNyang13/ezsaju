@@ -1,4 +1,13 @@
+// lib/screens/main_navigation_screen.dart
+// --------------------------------------------------------------
+// 하단 NavigationBar (Material 3)
+//   • 활성 탭  : 배경 = primary, 아이콘·라벨 = secondary
+//   • 비활성 탭: 배경 = secondary, 아이콘·라벨 = primary
+// --------------------------------------------------------------
+
 import 'package:flutter/material.dart';
+
+import '../widgets/bubbled_nav_bar.dart';
 import 'fortune_today_screen.dart';
 import 'saju_lookup_screen.dart';
 import 'daily_calendar_screen.dart';
@@ -13,11 +22,11 @@ class MainNavigationScreen extends StatefulWidget {
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 2; // 0:사주조회,1:일진달력,2:오늘의운세(초기),3:내사주,4:설정
+  int _selectedIndex = 2;
 
   final _pages = const [
-    SajuLookupScreen(),
     DailyCalendarScreen(),
+    SajuLookupScreen(),
     FortuneTodayScreen(),
     MySajuScreen(),
     SettingsScreen(),
@@ -27,20 +36,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: _pages),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onTap,
-        type: BottomNavigationBarType.fixed,
+
+      // ── NavigationBar (Material3) ─────────────────────────────
+      bottomNavigationBar: BubbledNavBar(
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: '사주조회'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: '일진달력'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: '오늘의 운세'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: '내 사주조회'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: '설정'),
+          NavBarItem(icon: Icons.calendar_today, label: '일진달력'),
+          NavBarItem(icon: Icons.search,         label: '사주조회'),
+          NavBarItem(icon: Icons.auto_graph_rounded, label: '오늘의 운세'),
+          NavBarItem(icon: Icons.person,         label: '내 사주조회'),
+          NavBarItem(icon: Icons.settings,       label: '설정'),
         ],
+        currentIndex   : _selectedIndex,
+        onTap          : _onTap,
+        backgroundColor: Color(0xFFfaf9f6),
+        activeColor    : scheme.primary,
+        inactiveColor  : Color(0xFFcccccc),
       ),
+
     );
   }
 }
