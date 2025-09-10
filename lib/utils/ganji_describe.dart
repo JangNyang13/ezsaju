@@ -17,6 +17,14 @@ String describeBranch(String ch) {
   return '$ko$elem $sign';
 }
 
+/// "甲子" → "갑자"
+String ganZhiToKo(String ganZhi) {
+  if (ganZhi.length < 2) return ganZhi;
+  final gan = ganZhi[0];
+  final zhi = ganZhi[1];
+  return "${_stemKo(gan)}${_branchKo(zhi)}";
+}
+
 /* ───────── 내부 헬퍼(프라이빗) ───────── */
 
 String _yinYangSignForStem(String ch) {

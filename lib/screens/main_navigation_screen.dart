@@ -39,7 +39,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _pages),
+      //body: IndexedStack(index: _selectedIndex, children: _pages),
+      body: _pages[_selectedIndex],
 
       // ── NavigationBar (Material3) ─────────────────────────────
       bottomNavigationBar: BubbledNavBar(

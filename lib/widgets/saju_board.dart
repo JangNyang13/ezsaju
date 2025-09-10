@@ -52,7 +52,7 @@ class SajuBoard extends StatelessWidget {
               colorByElement: true,
               isBranch: false,
               tenGod: hourTG,
-              expl: describeStem(hourGanText), // +갑목
+              expl: saju.hasHour ? describeStem(hourGanText): "ㅡ", // +갑목
             ),
             _SquareBox(
               text: saju.dayGan,
@@ -85,7 +85,7 @@ class SajuBoard extends StatelessWidget {
               colorByElement: true,
               isBranch: true,
               tenGod: hourZhiTG,
-              expl: describeBranch(hourZhiText), // +자수
+              expl: saju.hasHour ? describeBranch(hourZhiText): "ㅡ", // +자수
             ),
             _SquareBox(
               text: saju.dayZhi,
@@ -112,16 +112,24 @@ class SajuBoard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // 오행 카운트
+          // ── 오행 카운트 (한 줄 전체를 요소 색으로)
           Center(
             child: Wrap(
               spacing: 16,
               runSpacing: 8,
-              children: ['목', '화', '토', '금', '수']
-                  .map((k) => Text('$k: ${counts[k]}', style: AppTextStyles.body))
-                  .toList(),
+              children: ['목', '화', '토', '금', '수'].map((e) {
+                final v = counts[e] ?? 0;
+                return Text(
+                  '$e : $v',
+                  style: AppTextStyles.body.copyWith(
+                    color: _colorForElement(e),   // 전체를 요소 색으로
+                    fontWeight: FontWeight.w900,
+                  ),
+                );
+              }).toList(),
             ),
           ),
+
         ],
       ),
     );
@@ -213,12 +221,12 @@ class _SquareBox extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black54,
-                blurRadius: 2,
-                spreadRadius: 0.1,
+                blurRadius: 4,
+                spreadRadius: 0.3,
                 offset: Offset(0, 2),
               ),
             ],
@@ -262,7 +270,7 @@ class _SquareBox extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'SourceHanSansSC',
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w300,
                           fontSize: charFs,
                           height: 1.0,
                           color: Colors.white,
@@ -293,6 +301,17 @@ class _SquareBox extends StatelessWidget {
         );
       },
     );
+  }
+}
 
+
+Color _colorForElement(String e) {
+  switch (e) {
+    case '목': return AppColors.wood;
+    case '화': return AppColors.fire;
+    case '토': return AppColors.earth;
+    case '금': return AppColors.metal;
+    case '수': return AppColors.water;
+    default:   return Colors.grey;
   }
 }

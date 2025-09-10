@@ -11,8 +11,8 @@ class AppColors {
 
   // 공통 UI 색상
   static const Color primary = Color(0xFF424242);   // 차분
-  static const Color secondary = Color(0xFFcccccc); // 황금
+  static const Color secondary = Color(0xFFcccccc); // 밝은
   static const Color surface = Color(0xFFfaf9f6);   // 흰색
   static const Color background = Color(0xFFfaf9f6);//F8F8F8, f5f5f5
-  static const Color error = Color(0xFFB00020);
+  static const Color error = Color(0xFFB00020);//faf9f6
 }

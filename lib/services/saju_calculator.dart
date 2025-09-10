@@ -89,6 +89,10 @@ class SajuCalculator {
     final zhiIdx  = zhiSeq.indexOf(hourZhi);
     return ganSeq[(headIdx + zhiIdx) % 10];
   }
+  /// 외부에서 시간(天干) 계산에 접근할 수 있도록 공개 메서드
+  static String hourGanFromDayGan(String dayGan, String hourZhi) {
+    return _hourGanFromDayGan(dayGan, hourZhi);
+  }
 
   // ── 유틸 ──────────────────────────────────────────────────────────
   static String _yyyyMMdd(DateTime dt) =>

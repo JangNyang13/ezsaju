@@ -5,6 +5,7 @@ import '../models/saju_data.dart';
 import '../models/user_profile.dart';
 import '../services/saju_calculator.dart';
 import '../services/manse_loader.dart';
+import '../utils/elemental_relations.dart';
 
 class ProfilesRepository {
   static const _prefsKey = 'profiles_json';
@@ -97,10 +98,27 @@ class ProfilesRepository {
   // ✅ 시주 없을 수도 있으니, '-'/null은 건너뛰고 카운트
   List<String> _calcMissing(SajuData saju) {
     final counts = {'목': 0, '화': 0, '토': 0, '금': 0, '수': 0};
-    for (final e in saju.elements) {
-      if (e == '-') continue;      // ✅ 안전
-      counts[e] = (counts[e] ?? 0) + 1;
+
+    // 천간
+    final gans = [saju.yearGan, saju.monthGan, saju.dayGan];
+    if (saju.hasHour) gans.add(saju.hourGan);
+
+    for (final g in gans) {
+      final elem = stemToElement[g];
+      if (elem != null) counts[elem] = (counts[elem] ?? 0) + 1;
     }
+
+    // 지지
+    final zhis = [saju.yearZhi, saju.monthZhi, saju.dayZhi];
+    if (saju.hasHour) zhis.add(saju.hourZhi);
+
+    for (final z in zhis) {
+      final elem = branchToElement[z];
+      if (elem != null) counts[elem] = (counts[elem] ?? 0) + 1;
+    }
+
+    // 누락된 오행 반환
     return counts.entries.where((e) => e.value == 0).map((e) => e.key).toList();
   }
+
 }

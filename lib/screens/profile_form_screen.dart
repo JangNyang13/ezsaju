@@ -13,15 +13,17 @@ import '../providers/profiles_provider.dart';
 import '../models/user_profile.dart';
 
 // ✅ 추가
-import '../utils/lunar_converter.dart';
+import '../utils/lunar_converter.dart'; //음력->양력 변환
+import '../models/saju_form_result.dart'; //재활용
 
 enum CalendarKind { solar, lunarPlain, lunarLeap }
 
 class ProfileFormScreen extends ConsumerStatefulWidget {
-  const ProfileFormScreen({super.key, this.profile, this.index});
+  const ProfileFormScreen({super.key, this.profile, this.index, this.popResultOnly = false,});
 
   final UserProfile? profile; // 편집 대상
   final int? index;           // 해당 인덱스
+  final bool popResultOnly; //조회용 확인
 
   bool get isEdit => profile != null && index != null;
 
@@ -36,7 +38,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   String _gender = 'M';
   DateTime _birthDate = DateTime(2000, 1, 1);
   TimeOfDay _birthTime = const TimeOfDay(hour: 12, minute: 0);
-  bool _timeUnknown = true;
+  bool _timeUnknown = false; // 기본값: 시간 입력
   CalendarKind _calKind = CalendarKind.solar;
 
   @override
@@ -249,9 +251,25 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       solarDate.month,
       solarDate.day,
       _timeUnknown ? 12 : _birthTime.hour,
-      _timeUnknown ? 0 : _birthTime.minute,
+      _timeUnknown ? 0  : _birthTime.minute,
     );
 
+    // 3) 결과만 돌려주는 모드라면 저장하지 않고 pop
+    if (widget.popResultOnly) {
+      if (!mounted) return;
+      Navigator.pop(
+        context,
+        SajuFormResult(
+          name: _nameCtrl.text.trim(),
+          birth: birthDT,
+          gender: _gender,
+          timeUnknown: _timeUnknown,
+        ),
+      );
+      return;
+    }
+
+    // 4) 저장/업데이트 (기존 로직 유지)
     try {
       if (widget.isEdit) {
         final updated = widget.profile!.copyWith(
@@ -277,6 +295,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
+
 
   @override
   void dispose() {

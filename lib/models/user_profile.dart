@@ -3,18 +3,18 @@ import 'package:ezsaju/models/saju_data.dart';
 
 class UserProfile {
   final String name;
-  final String gender;        // 'M' / 'F'
+  final String gender;
   final DateTime birth;
-  final bool timeUnknown;     // ✅ 추가
-  final SajuData? saju;       // (이미 쓰고 있던 구조라면 유지)
+  final bool timeUnknown;
+  final SajuData saju;  // ✅ nullable 제거
   final List<String> missingElements;
 
   const UserProfile({
     required this.name,
     required this.gender,
     required this.birth,
-    this.timeUnknown = false, // ✅ 기본 false
-    this.saju,
+    this.timeUnknown = false,
+    required this.saju,   // ✅ 무조건 필요
     this.missingElements = const [],
   });
 
@@ -22,14 +22,14 @@ class UserProfile {
     String? name,
     String? gender,
     DateTime? birth,
-    bool? timeUnknown,        // ✅
+    bool? timeUnknown,
     SajuData? saju,
     List<String>? missingElements,
   }) => UserProfile(
     name: name ?? this.name,
     gender: gender ?? this.gender,
     birth: birth ?? this.birth,
-    timeUnknown: timeUnknown ?? this.timeUnknown, // ✅
+    timeUnknown: timeUnknown ?? this.timeUnknown,
     saju: saju ?? this.saju,
     missingElements: missingElements ?? this.missingElements,
   );
@@ -38,8 +38,8 @@ class UserProfile {
     'name': name,
     'gender': gender,
     'birth': birth.toIso8601String(),
-    'timeUnknown': timeUnknown,                 // ✅
-    'saju': saju?.toJson(),
+    'timeUnknown': timeUnknown,
+    'saju': saju.toJson(), // ✅ 항상 존재
     'missingElements': missingElements,
   };
 
@@ -47,8 +47,8 @@ class UserProfile {
     name: j['name'] as String,
     gender: j['gender'] as String,
     birth: DateTime.parse(j['birth'] as String),
-    timeUnknown: (j['timeUnknown'] as bool?) ?? false, // ✅
-    saju: j['saju'] == null ? null : SajuData.fromJson(j['saju'] as Map<String, dynamic>),
+    timeUnknown: (j['timeUnknown'] as bool?) ?? false,
+    saju: SajuData.fromJson(j['saju'] as Map<String, dynamic>), // ✅ null 아님
     missingElements: (j['missingElements'] as List?)?.cast<String>() ?? const [],
   );
 }

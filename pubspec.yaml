@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.8.1
@@ -44,6 +44,12 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_riverpod: ^2.6.1
   water_drop_nav_bar: ^2.2.2
+  lottie: ^3.3.1
+  fl_chart: ^1.0.0
+  permission_handler: ^12.0.1
+  flutter_local_notifications: ^19.4.1
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +77,11 @@ flutter:
   assets:
     - assets/
     - assets/data/manse_1900_2100.json
+    - assets/lottie/Weather-sunny.json
+    - assets/lottie/Weather-partly cloudy.json
+    - assets/lottie/Foggy.json
+    - assets/lottie/Weather-partly shower.json
+    - assets/lottie/Weather-storm&showers(day).json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -118,3 +129,15 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"  # 네가 만든 아이콘 경로
+  adaptive_icon_background: "#faf9f6"
+  adaptive_icon_foreground: "assets/images/logo.png"
+
+flutter_native_splash:
+  color: "#faf9f6"   # 스플래시 배경색 (앱 톤과 맞추기)
+  image: assets/images/logo.png   # 중앙에 표시할 로고 (보통 앱 아이콘과 같은 파일)
+  android: true
+  ios: true

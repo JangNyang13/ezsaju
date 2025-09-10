@@ -168,7 +168,18 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('${day.day}', style: const TextStyle(color: Colors.black87, fontSize: 15)),
-          Row(children: [ _charBox(ganji[0]), const SizedBox(width: 2), _charBox(ganji[1]) ]),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _charBox(ganji[0]),
+                const SizedBox(width: 2),
+                _charBox(ganji[1]),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(top: 2),
             child: Text(lunarTxt, style: const TextStyle(fontSize: 10, color: Colors.black54)),

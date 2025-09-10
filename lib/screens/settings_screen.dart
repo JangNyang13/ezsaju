@@ -1,16 +1,11 @@
-// lib/screens/settings_screen.dart
-// --------------------------------------------------------------
-// 설정 화면 – 프로필 3칸 슬롯 (직관적 메뉴)
-// * 빈 칸   : + 탭하면 새 프로필 추가
-// * 채워진 칸 : 탭 → 하단 메뉴 [선택·수정·삭제]
-// --------------------------------------------------------------
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/profiles_provider.dart';
 import '../repositories/profiles_repository.dart';
 import 'profile_form_screen.dart';
+import 'memo_archive_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -24,69 +19,85 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true, // 가운데 정렬
-        backgroundColor: Colors.transparent, // 투명
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.black87, // ← 글자·아이콘 색 한 번에 지정
+        foregroundColor: Colors.black87,
         titleTextStyle: Theme.of(
           context,
         ).textTheme.titleLarge!.copyWith(color: Colors.black87),
-        // (필요 시) 글자 스타일 세부 조정
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
         title: const Text('설정'),
       ),
       body: asyncProfiles.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text('로딩 실패')),
-        data: (list) => Padding(
+        data: (list) => ListView(
           padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(_maxSlots, (i) {
-              final filled = i < list.length;
-              final isSel = i == selIdx;
+          children: [
+            // ── 프로필 슬롯 영역 ──
+            Row(
+              children: List.generate(_maxSlots, (i) {
+                final filled = i < list.length;
+                final isSel = i == selIdx;
 
-              return GestureDetector(
-                onTap: () => filled
-                    ? _showProfileMenu(context, ref, i, list[i])
-                    : _addNewProfile(context, ref, list.length),
-                child: Container(
-                  width: 110,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isSel
-                          ? Theme.of(context).colorScheme.primary
-                          : Colors.grey.shade400,
-                      width: 2,
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => filled
+                        ? _showProfileMenu(context, ref, i, list[i])
+                        : _addNewProfile(context, ref, list.length),
+                    child: Container(
+                      margin: const EdgeInsets.all(4),
+                      height: 120,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSel
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey.shade400,
+                          width: 2,
+                        ),
+                        color: filled ? Colors.white : Colors.grey.shade100,
+                      ),
+                      child: filled
+                          ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(list[i].name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${list[i].birth.year}.${list[i].birth.month.toString().padLeft(2, '0')}.${list[i].birth.day.toString().padLeft(2, '0')}',
+                            style: const TextStyle(fontSize: 12, color: Colors.black54),
+                          ),
+                        ],
+                      )
+                          : const Icon(Icons.add, size: 36, color: Colors.grey),
                     ),
-                    color: filled ? Colors.white : Colors.grey.shade100,
                   ),
-                  child: filled
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              list[i].name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '${list[i].birth.year}.${list[i].birth.month.toString().padLeft(2, '0')}.${list[i].birth.day.toString().padLeft(2, '0')}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ],
-                        )
-                      : const Icon(Icons.add, size: 36, color: Colors.grey),
-                ),
-              );
-            }),
-          ),
+                );
+              }),
+            ),
+
+
+            const SizedBox(height: 32),
+
+            // ────────────── 운세 보관함 진입 버튼 ──────────────────────────────
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text("운세 보관함"),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MemoArchiveScreen()),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -94,10 +105,10 @@ class SettingsScreen extends ConsumerWidget {
 
   /* ─── Helpers ─── */
   Future<void> _addNewProfile(
-    BuildContext ctx,
-    WidgetRef ref,
-    int currentCount,
-  ) async {
+      BuildContext ctx,
+      WidgetRef ref,
+      int currentCount,
+      ) async {
     if (currentCount >= _maxSlots) return;
     await Navigator.push(
       ctx,
@@ -117,7 +128,7 @@ class SettingsScreen extends ConsumerWidget {
               title: const Text('프로필 선택'),
               onTap: () {
                 Navigator.pop(bCtx);
-                ref.read(selectedProfileIndexProvider.notifier).state = idx;
+                ref.read(selectedProfileIndexProvider.notifier).setIndex(idx); // ✅ 저장
               },
             ),
             ListTile(
@@ -167,10 +178,10 @@ class SettingsScreen extends ConsumerWidget {
               if (ctx.mounted) {
                 ref.invalidate(profilesProvider);
                 final len = await ProfilesRepository.instance.fetchAll().then(
-                  (l) => l.length,
+                      (l) => l.length,
                 );
                 if (ref.read(selectedProfileIndexProvider) >= len) {
-                  ref.read(selectedProfileIndexProvider.notifier).state = 0;
+                  ref.read(selectedProfileIndexProvider.notifier).setIndex(0);
                 }
               }
             },
