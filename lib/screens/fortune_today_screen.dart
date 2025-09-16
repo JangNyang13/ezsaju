@@ -8,6 +8,7 @@ import '../models/saju_data.dart';
 import '../repositories/memo_repository.dart';
 import '../utils/elemental_relations.dart';
 import '../services/manse_loader.dart';
+import 'main_navigation_screen.dart';
 
 class FortuneTodayScreen extends ConsumerStatefulWidget {
   const FortuneTodayScreen({super.key});
@@ -23,7 +24,10 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    );
   }
 
   DateTime _logicalToday() {
@@ -37,7 +41,6 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
       return DateTime(tomorrow.year, tomorrow.month, tomorrow.day);
     }
   }
-
 
   @override
   void didChangeDependencies() {
@@ -63,7 +66,24 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
     final profile = ref.watch(currentProfileProvider);
 
     if (profile == null) {
-      return const Scaffold(body: Center(child: Text('설정에서 프로필을 먼저 선택/추가하세요')));
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('설정에서 프로필을 먼저 선택/추가하세요'),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                icon: const Icon(Icons.person_add),
+                label: const Text("프로필 추가하기"),
+                onPressed: () {
+                  MainNavigationScreen.goToTab(4); // 👈 Settings 탭으로 이동
+                },
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final today = _logicalToday();
@@ -96,78 +116,251 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
           final resultText = fortuneLabel(score);
 
           return ListView(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ── Lottie 날씨 아이콘 (한 번만 재생 후 정지) ──
-                  SizedBox(
-                    width: 200,
-                    height: 200,
-                    child: Lottie.asset(
-                      _lottieForResult(resultText),
-                      controller: _controller,
-                      onLoaded: (composition) {
-                        _controller
-                          ..duration = composition.duration
-                          ..forward().whenComplete(() {
-                            _controller.stop(); // ✅ 끝나면 멈춤
-                          });
-                      },
+                  // ── 오늘 운세 카드 ──
+                  Card(
+                    elevation: 3,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 20,
+                        left: 40,
+                        right: 40,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // ── Lottie 날씨 아이콘 ──
+                          SizedBox(
+                            width: 200,
+                            height: 200,
+                            child: Lottie.asset(
+                              _lottieForResult(resultText),
+                              controller: _controller,
+                              onLoaded: (composition) {
+                                _controller
+                                  ..duration = composition.duration
+                                  ..forward().whenComplete(() {
+                                    _controller.stop(); // ✅ 끝나면 멈춤
+                                  });
+                              },
+                            ),
+                          ),
+
+                          // ── 오늘의 일진 ──
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                todayGan,
+                                style: TextStyle(
+                                  fontSize: 80,
+                                  fontWeight: FontWeight.w800,
+                                  fontFamily: 'HangGang',
+                                  height: 1.0,
+                                  color: _colorForChar(todayGan),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                todayZhi,
+                                style: TextStyle(
+                                  fontSize: 80,
+                                  fontWeight: FontWeight.w800,
+                                  fontFamily: 'HangGang',
+                                  height: 1.0,
+                                  color: _colorForChar(todayZhi),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // ── 오늘 운세 결과 텍스트 ──
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: "오늘 당신의 운세는 ",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: resultText,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600, // ✅ 굵게
+                                    decoration: TextDecoration.underline, // ✅ 밑줄
+                                  ),
+                                ),
+                                const TextSpan(
+                                  text: "이에요!",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
 
-                  // ── 오늘의 일진 (세로 표시) ──
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        todayGan,
-                        style: TextStyle(
-                          fontSize: 64,
-                          fontWeight: FontWeight.w300,
-                          fontFamily: 'SourceHanSansSC',
-                          height: 1.0,
-                          color: _colorForChar(todayGan),
+                  // ── 버튼 Column ──
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // 내일 운세 미리보기 (광고 대체)
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            final tomorrow = today.add(const Duration(days: 1));
+                            final tomorrowRow = await ManseLoader.get(tomorrow);
+
+                            if (tomorrowRow == null) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("내일 운세 데이터를 불러올 수 없습니다."),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final ganZhi = tomorrowRow['cd_hdganjee'] as String;
+                            final gan = ganZhi.substring(0, 1);
+                            final zhi = ganZhi.substring(1);
+
+                            final tomorrowCounts = _countFromChars([gan, zhi]);
+                            final score = _evaluateFortuneScore(
+                              profile.saju,
+                              tomorrowCounts,
+                              zhi,
+                            );
+                            final resultText = fortuneLabel(score);
+
+                            if (!context.mounted) return;
+                            showDialog(
+                              context: context,
+                              builder: (ctx) {
+                                return AlertDialog(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        height: 150,
+                                        child: Lottie.asset(
+                                          _lottieForResult(resultText),
+                                          repeat: false,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: gan,
+                                              style: TextStyle(
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'SourceHanSansSC',
+                                                color: _colorForChar(gan), // ✅ 천간 색상
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: zhi,
+                                              style: TextStyle(
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'SourceHanSansSC',
+                                                color: _colorForChar(zhi), // ✅ 지지 색상
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+
+                                      const SizedBox(height: 16),
+                                      Text.rich(
+                                        TextSpan(
+                                          children: [
+                                            const TextSpan(
+                                              text: "내일 당신의 운세는 ",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: resultText,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600, // ✅ 굵게
+                                                decoration: TextDecoration.underline, // ✅ 밑줄
+                                              ),
+                                            ),
+                                            const TextSpan(
+                                              text: "이에요!",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text("확인"),
+                                      onPressed: () => Navigator.pop(ctx),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.ondemand_video, size: 20),
+                          label: const Text("내일 운세 미리보기"),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 7),
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        todayZhi,
-                        style: TextStyle(
-                          fontSize: 64,
-                          fontWeight: FontWeight.w300,
-                          fontFamily: 'SourceHanSansSC',
-                          height: 1.0,
-                          color: _colorForChar(todayZhi),
-                        ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 24),
+                        const SizedBox(height: 4),
 
-                  // ── 운세 결과 텍스트 ──
-                  Text(
-                    resultText,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // ── 버튼 Row ──
-                  Row(
-                    children: [
-                      // 오늘 하루 메모하기
-                      // ────────── 오늘 하루 메모하기 버튼 ────────────────────
-                      Expanded(
-                        child: ElevatedButton.icon(
+                        // 오늘 하루 메모하기
+                        // ────────── 오늘 하루 메모하기 버튼 ────────────────────
+                        ElevatedButton.icon(
                           onPressed: () async {
                             final memoCtrl = TextEditingController();
                             String? selectedFeeling;
@@ -178,8 +371,13 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                               builder: (ctx) {
                                 return Dialog(
                                   backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  insetPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 24,
+                                  ),
                                   child: StatefulBuilder(
                                     builder: (context, setState) {
                                       return SingleChildScrollView(
@@ -187,19 +385,23 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                                           left: 16,
                                           right: 16,
                                           top: 20,
-                                          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-                                          // ✅ 키보드 높이만큼 패딩 추가
+                                          bottom:
+                                              MediaQuery.of(
+                                                context,
+                                              ).viewInsets.bottom +
+                                              20,
                                         ),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             const Text(
                                               "오늘 하루 메모하기",
-                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-
                                             const SizedBox(height: 12),
-
                                             // 오늘의 일진 표시
                                             Text.rich(
                                               TextSpan(
@@ -208,65 +410,110 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                                                     text: todayGan,
                                                     style: TextStyle(
                                                       fontSize: 64,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: _colorForChar(todayGan),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: _colorForChar(
+                                                        todayGan,
+                                                      ),
                                                     ),
                                                   ),
                                                   TextSpan(
                                                     text: todayZhi,
                                                     style: TextStyle(
                                                       fontSize: 64,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: _colorForChar(todayZhi),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: _colorForChar(
+                                                        todayZhi,
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-
                                             const SizedBox(height: 12),
-
                                             // 5단계 버튼 (아이콘 + 라벨)
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                {"label": "화창함", "icon": Icons.sentiment_very_satisfied},
-                                                {"label": "맑음", "icon": Icons.sentiment_satisfied},
-                                                {"label": "보통", "icon": Icons.sentiment_neutral},
-                                                {"label": "흐림", "icon": Icons.sentiment_dissatisfied},
-                                                {"label": "아주흐림", "icon": Icons.sentiment_very_dissatisfied},
-                                              ].map((item) {
-                                                final label = item["label"] as String;
-                                                final icon = item["icon"] as IconData;
-                                                final isSelected = selectedFeeling == label;
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children:
+                                                  [
+                                                    {
+                                                      "label": "화창함",
+                                                      "icon": Icons
+                                                          .sentiment_very_satisfied,
+                                                    },
+                                                    {
+                                                      "label": "맑음",
+                                                      "icon": Icons
+                                                          .sentiment_satisfied,
+                                                    },
+                                                    {
+                                                      "label": "보통",
+                                                      "icon": Icons
+                                                          .sentiment_neutral,
+                                                    },
+                                                    {
+                                                      "label": "흐림",
+                                                      "icon": Icons
+                                                          .sentiment_dissatisfied,
+                                                    },
+                                                    {
+                                                      "label": "아주흐림",
+                                                      "icon": Icons
+                                                          .sentiment_very_dissatisfied,
+                                                    },
+                                                  ].map((item) {
+                                                    final label =
+                                                        item["label"] as String;
+                                                    final icon =
+                                                        item["icon"]
+                                                            as IconData;
+                                                    final isSelected =
+                                                        selectedFeeling ==
+                                                        label;
 
-                                                return GestureDetector(
-                                                  onTap: () => setState(() => selectedFeeling = label),
-                                                  child: Column(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: [
-                                                      Icon(icon, size: 36,
-                                                          color: isSelected ? Colors.blue : Colors.grey),
-                                                      const SizedBox(height: 4),
-                                                      Text(
-                                                        label,
-                                                        style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: isSelected ? Colors.blue : Colors.grey,
-                                                          fontWeight: isSelected
-                                                              ? FontWeight.bold
-                                                              : FontWeight.normal,
-                                                        ),
+                                                    return GestureDetector(
+                                                      onTap: () => setState(
+                                                        () => selectedFeeling =
+                                                            label,
                                                       ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }).toList(),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            icon,
+                                                            size: 36,
+                                                            color: isSelected
+                                                                ? Colors.blue
+                                                                : Colors.grey,
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 4,
+                                                          ),
+                                                          Text(
+                                                            label,
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: isSelected
+                                                                  ? Colors.blue
+                                                                  : Colors.grey,
+                                                              fontWeight:
+                                                                  isSelected
+                                                                  ? FontWeight
+                                                                        .bold
+                                                                  : FontWeight
+                                                                        .normal,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    );
+                                                  }).toList(),
                                             ),
-
                                             const SizedBox(height: 12),
-
                                             // 메모 입력
                                             TextField(
                                               controller: memoCtrl,
@@ -277,16 +524,16 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                                                 border: OutlineInputBorder(),
                                               ),
                                             ),
-
                                             const SizedBox(height: 12),
-
                                             // 액션 버튼
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
                                               children: [
                                                 TextButton(
                                                   child: const Text("취소"),
-                                                  onPressed: () => Navigator.pop(ctx),
+                                                  onPressed: () =>
+                                                      Navigator.pop(ctx),
                                                 ),
                                                 ElevatedButton(
                                                   child: const Text("저장"),
@@ -300,16 +547,28 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                                                       date: dateKey,
                                                       feeling: selectedFeeling!,
                                                       memo: memoCtrl.text,
-                                                      yearGanZhi: todayRow['cd_hyganjee'] as String,
-                                                      monthGanZhi: todayRow['cd_hmganjee'] as String,
-                                                      dayGanZhi: todayRow['cd_hdganjee'] as String,
+                                                      yearGanZhi:
+                                                          todayRow['cd_hyganjee']
+                                                              as String,
+                                                      monthGanZhi:
+                                                          todayRow['cd_hmganjee']
+                                                              as String,
+                                                      dayGanZhi:
+                                                          todayRow['cd_hdganjee']
+                                                              as String,
                                                     );
 
                                                     if (!context.mounted) return;
                                                     Navigator.pop(ctx);
 
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      const SnackBar(content: Text("오늘 메모가 저장되었습니다.")),
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          "오늘 메모가 저장되었습니다.",
+                                                        ),
+                                                      ),
                                                     );
                                                   },
                                                 ),
@@ -323,40 +582,19 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                                 );
                               },
                             );
-
                           },
                           icon: const Icon(Icons.edit_note, size: 20),
                           label: const Text("오늘 하루 메모하기"),
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 7),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
-                      ),
-
-                      const SizedBox(width: 24),
-
-                      // 내일 운세 미리보기 (광고)
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            // TODO: 광고 시청 후 내일 운세 보여주기
-                          },
-                          icon: const Icon(Icons.ondemand_video, size: 20),
-                          label: const Text("내일 운세 미리보기"),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),

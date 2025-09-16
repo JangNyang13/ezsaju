@@ -1,21 +1,22 @@
-// --------------------------------------------------------------
-// Riverpod 상태 관리: 저장된 프로필 목록 + 현재 선택 프로필 인덱스 (영구저장)
-// --------------------------------------------------------------
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/profiles_repository.dart';
 import '../models/user_profile.dart';
+// --------------------------------------------------------------
+// Riverpod 상태 관리: 저장된 프로필 목록 + 현재 선택 프로필 인덱스 (영구저장)
+// --------------------------------------------------------------
 
 /* ─── 프로필 목록 프로바이더 (Async) ─── */
-final profilesProvider = FutureProvider<List<UserProfile>>((ref) async {
-  return ProfilesRepository.instance.fetchAll();
-});
+final profilesProvider = FutureProvider<List<UserProfile>>(
+      (ref) async => ProfilesRepository.instance.fetchAll(),
+);
 
 /* ─── 현재 선택 인덱스 (SharedPreferences로 영구저장) ─── */
 final selectedProfileIndexProvider =
-StateNotifierProvider<SelectedProfileIndexNotifier, int>((ref) {
-  return SelectedProfileIndexNotifier();
-});
+StateNotifierProvider<SelectedProfileIndexNotifier, int>(
+      (ref) => SelectedProfileIndexNotifier(),
+);
 
 class SelectedProfileIndexNotifier extends StateNotifier<int> {
   static const _key = "selected_profile_index";
@@ -26,7 +27,10 @@ class SelectedProfileIndexNotifier extends StateNotifier<int> {
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    state = prefs.getInt(_key) ?? 0;
+    final savedIndex = prefs.getInt(_key);
+    if (savedIndex != null) {
+      state = savedIndex;
+    }
   }
 
   Future<void> setIndex(int idx) async {
@@ -41,9 +45,8 @@ final currentProfileProvider = Provider<UserProfile?>((ref) {
   final asyncProfiles = ref.watch(profilesProvider);
   final idx = ref.watch(selectedProfileIndexProvider);
 
-  return asyncProfiles.when(
+  return asyncProfiles.maybeWhen(
     data: (list) => (idx < list.length) ? list[idx] : null,
-    loading: () => null,
-    error: (_, __) => null,
+    orElse: () => null,
   );
 });

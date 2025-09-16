@@ -159,66 +159,97 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     DateTime temp = _birthDate;
     await showModalBottomSheet(
       context: context,
-      builder: (ctx) => SizedBox(
-        height: 280,
-        child: Column(children: [
-          Expanded(
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
-              initialDateTime: _birthDate,
-              minimumDate: DateTime(1900, 1, 1),
-              maximumDate: DateTime(2100, 12, 31),
-              onDateTimeChanged: (d) => temp = d,
+      isScrollControlled: true, // ✅ 바텀시트 높이 제어
+      backgroundColor: Colors.white,
+      builder: (ctx) => SafeArea( // ✅ 네비게이션바/노치 회피
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
+          child: SizedBox(
+            height: 320,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: _birthDate,
+                    minimumDate: DateTime(1900, 1, 1),
+                    maximumDate: DateTime(2100, 12, 31),
+                    onDateTimeChanged: (d) => temp = d,
+                  ),
+                ),
+                CupertinoButton(
+                  child: const Text('확인'),
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    setState(() => _birthDate = temp);
+                  },
+                ),
+              ],
             ),
           ),
-          CupertinoButton(
-            child: const Text('확인'),
-            onPressed: () {
-              Navigator.pop(ctx);
-              setState(() => _birthDate = temp);
-            },
-          ),
-        ]),
+        ),
       ),
     );
   }
+
 
   Future<void> _pickTime() async {
     TimeOfDay temp = _birthTime;
     await showModalBottomSheet(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => SizedBox(
-          height: 320,
-          child: Column(children: [
-            SwitchListTile(
-              title: const Text('시간 모름'),
-              value: _timeUnknown,
-              onChanged: (v) => setModalState(() => _timeUnknown = v),
+      isScrollControlled: true, // ✅ 전체 높이 제어 가능
+      backgroundColor: Colors.white,
+      builder: (ctx) => SafeArea( // ✅ 네비게이션 바/노치 피하기
+        child: StatefulBuilder(
+          builder: (ctx, setModalState) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
             ),
-            if (!_timeUnknown)
-              Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.time,
-                  initialDateTime: DateTime(2024, 1, 1, temp.hour, temp.minute),
-                  use24hFormat: true,
-                  onDateTimeChanged: (d) => setModalState(() => temp = TimeOfDay.fromDateTime(d)),
-                ),
+            child: SizedBox(
+              height: 340,
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    title: const Text('시간 모름'),
+                    value: _timeUnknown,
+                    onChanged: (v) =>
+                        setModalState(() => _timeUnknown = v),
+                  ),
+                  if (!_timeUnknown)
+                    Expanded(
+                      child: CupertinoDatePicker(
+                        mode: CupertinoDatePickerMode.time,
+                        initialDateTime: DateTime(
+                            2024, 1, 1, temp.hour, temp.minute),
+                        use24hFormat: true,
+                        onDateTimeChanged: (d) =>
+                            setModalState(() =>
+                            temp = TimeOfDay.fromDateTime(d)),
+                      ),
+                    ),
+                  CupertinoButton(
+                    child: const Text('확인'),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      setState(() {
+                        _timeUnknown
+                            ? _birthTime = const TimeOfDay(
+                            hour: 12, minute: 0)
+                            : _birthTime = temp;
+                      });
+                    },
+                  ),
+                ],
               ),
-            CupertinoButton(
-              child: const Text('확인'),
-              onPressed: () {
-                Navigator.pop(ctx);
-                setState(() {
-                  _timeUnknown ? _birthTime = const TimeOfDay(hour: 12, minute: 0) : _birthTime = temp;
-                });
-              },
             ),
-          ]),
+          ),
         ),
       ),
     );
   }
+
 
   /* ── 저장 ─────────────────────────────────────────── */
   Future<void> _save() async {

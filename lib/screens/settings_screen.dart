@@ -39,6 +39,16 @@ class SettingsScreen extends ConsumerWidget {
         data: (list) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // ── 프로필 섹션 제목 ──
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+              child: Text(
+                "프로필",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             // ── 프로필 슬롯 영역 ──
             Row(
               children: List.generate(_maxSlots, (i) {
