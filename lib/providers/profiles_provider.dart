@@ -1,28 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../repositories/profiles_repository.dart';
 import '../models/user_profile.dart';
-// --------------------------------------------------------------
-// Riverpod 상태 관리: 저장된 프로필 목록 + 현재 선택 프로필 인덱스 (영구저장)
-// --------------------------------------------------------------
 
-/* ─── 프로필 목록 프로바이더 (Async) ─── */
-final profilesProvider = FutureProvider<List<UserProfile>>(
-      (ref) async => ProfilesRepository.instance.fetchAll(),
-);
+// ── 프로필 목록(Async)
+final profilesProvider = FutureProvider<List<UserProfile>>((ref) async {
+  return ProfilesRepository.instance.fetchAll();
+});
 
-/* ─── 현재 선택 인덱스 (SharedPreferences로 영구저장) ─── */
+// ── 선택 인덱스(영구 저장) - v3: Notifier/NotifierProvider 사용
 final selectedProfileIndexProvider =
-StateNotifierProvider<SelectedProfileIndexNotifier, int>(
-      (ref) => SelectedProfileIndexNotifier(),
+NotifierProvider<SelectedProfileIndexNotifier, int>(
+  SelectedProfileIndexNotifier.new,
 );
 
-class SelectedProfileIndexNotifier extends StateNotifier<int> {
-  static const _key = "selected_profile_index";
+class SelectedProfileIndexNotifier extends Notifier<int> {
+  static const _key = 'selected_profile_index';
 
-  SelectedProfileIndexNotifier() : super(0) {
+  @override
+  int build() {
+    // 초기값은 0으로 두고, 비동기 로드는 뒤에서 반영
     _load();
+    return 0;
   }
 
   Future<void> _load() async {
@@ -40,13 +39,13 @@ class SelectedProfileIndexNotifier extends StateNotifier<int> {
   }
 }
 
-/* ─── 현재 선택된 프로필 (nullable) ─── */
+// ── 현재 선택된 프로필(파생 상태)
 final currentProfileProvider = Provider<UserProfile?>((ref) {
   final asyncProfiles = ref.watch(profilesProvider);
   final idx = ref.watch(selectedProfileIndexProvider);
 
   return asyncProfiles.maybeWhen(
-    data: (list) => (idx < list.length) ? list[idx] : null,
+    data: (list) => (idx >= 0 && idx < list.length) ? list[idx] : null,
     orElse: () => null,
   );
 });
