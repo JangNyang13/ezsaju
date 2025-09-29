@@ -19,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       "title": "오늘 하루의 운세",
       "desc": "나의 사주로 오늘 하루 일진이 맑고 화창한지, \n안좋은 흐린 날인지를 확인해보아요!",
-      "emoji": "lottie", // ✅ 로티 표시
+      "emoji": "lottie",
     },
     {
       "title": "사주조회",
@@ -47,6 +47,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose(); // ✅ 메모리 누수 방지
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
@@ -70,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           SizedBox(
                             height: 200,
                             child: Lottie.asset(
-                              "assets/lottie/Weather-sunny.json", // ✅ 원하는 로티
+                              "assets/lottie/Weather-sunny.json",
                               repeat: true,
                             ),
                           ),
@@ -124,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: scheme.primary, // ✅ 더 진한 색
+                  backgroundColor: scheme.primary,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 52),
                   shape: RoundedRectangleBorder(
@@ -143,7 +149,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 child: Text(
                   _currentIndex == _pages.length - 1 ? "시작하기" : "다음",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

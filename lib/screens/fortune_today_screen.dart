@@ -5,9 +5,9 @@ import 'package:lottie/lottie.dart';
 import '../constants/colors.dart';
 import '../providers/profiles_provider.dart';
 import '../models/saju_data.dart';
-import '../repositories/memo_repository.dart';
 import '../utils/elemental_relations.dart';
 import '../services/manse_loader.dart';
+import '../widgets/today_memo_dialog.dart';
 import 'main_navigation_screen.dart';
 
 class FortuneTodayScreen extends ConsumerStatefulWidget {
@@ -361,238 +361,21 @@ class _FortuneTodayScreenState extends ConsumerState<FortuneTodayScreen>
                         // 오늘 하루 메모하기
                         // ────────── 오늘 하루 메모하기 버튼 ────────────────────
                         ElevatedButton.icon(
-                          onPressed: () async {
-                            final memoCtrl = TextEditingController();
-                            String? selectedFeeling;
-
+                          onPressed: () {
                             showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (ctx) {
-                                return Dialog(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  insetPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 24,
-                                  ),
-                                  child: StatefulBuilder(
-                                    builder: (context, setState) {
-                                      return SingleChildScrollView(
-                                        padding: EdgeInsets.only(
-                                          left: 16,
-                                          right: 16,
-                                          top: 20,
-                                          bottom:
-                                              MediaQuery.of(
-                                                context,
-                                              ).viewInsets.bottom +
-                                              20,
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Text(
-                                              "오늘 하루 메모하기",
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            // 오늘의 일진 표시
-                                            Text.rich(
-                                              TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                    text: todayGan,
-                                                    style: TextStyle(
-                                                      fontSize: 64,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: _colorForChar(
-                                                        todayGan,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  TextSpan(
-                                                    text: todayZhi,
-                                                    style: TextStyle(
-                                                      fontSize: 64,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: _colorForChar(
-                                                        todayZhi,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const SizedBox(height: 12),
-                                            // 5단계 버튼 (아이콘 + 라벨)
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children:
-                                                  [
-                                                    {
-                                                      "label": "화창함",
-                                                      "icon": Icons
-                                                          .sentiment_very_satisfied,
-                                                    },
-                                                    {
-                                                      "label": "맑음",
-                                                      "icon": Icons
-                                                          .sentiment_satisfied,
-                                                    },
-                                                    {
-                                                      "label": "보통",
-                                                      "icon": Icons
-                                                          .sentiment_neutral,
-                                                    },
-                                                    {
-                                                      "label": "흐림",
-                                                      "icon": Icons
-                                                          .sentiment_dissatisfied,
-                                                    },
-                                                    {
-                                                      "label": "아주흐림",
-                                                      "icon": Icons
-                                                          .sentiment_very_dissatisfied,
-                                                    },
-                                                  ].map((item) {
-                                                    final label =
-                                                        item["label"] as String;
-                                                    final icon =
-                                                        item["icon"]
-                                                            as IconData;
-                                                    final isSelected =
-                                                        selectedFeeling ==
-                                                        label;
-
-                                                    return GestureDetector(
-                                                      onTap: () => setState(
-                                                        () => selectedFeeling =
-                                                            label,
-                                                      ),
-                                                      child: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(
-                                                            icon,
-                                                            size: 36,
-                                                            color: isSelected
-                                                                ? Colors.blue
-                                                                : Colors.grey,
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 4,
-                                                          ),
-                                                          Text(
-                                                            label,
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              color: isSelected
-                                                                  ? Colors.blue
-                                                                  : Colors.grey,
-                                                              fontWeight:
-                                                                  isSelected
-                                                                  ? FontWeight
-                                                                        .bold
-                                                                  : FontWeight
-                                                                        .normal,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            // 메모 입력
-                                            TextField(
-                                              controller: memoCtrl,
-                                              maxLength: 140,
-                                              maxLines: 3,
-                                              decoration: const InputDecoration(
-                                                hintText: "오늘 하루를 짧게 기록해보세요",
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            // 액션 버튼
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                TextButton(
-                                                  child: const Text("취소"),
-                                                  onPressed: () =>
-                                                      Navigator.pop(ctx),
-                                                ),
-                                                ElevatedButton(
-                                                  child: const Text("저장"),
-                                                  onPressed: () async {
-                                                    if (selectedFeeling == null) return;
-
-                                                    final dateKey =
-                                                        "${today.year}-${today.month}-${today.day}";
-
-                                                    await MemoRepository.addMemo(
-                                                      date: dateKey,
-                                                      feeling: selectedFeeling!,
-                                                      memo: memoCtrl.text,
-                                                      yearGanZhi:
-                                                          todayRow['cd_hyganjee']
-                                                              as String,
-                                                      monthGanZhi:
-                                                          todayRow['cd_hmganjee']
-                                                              as String,
-                                                      dayGanZhi:
-                                                          todayRow['cd_hdganjee']
-                                                              as String,
-                                                    );
-
-                                                    if (!context.mounted) return;
-                                                    Navigator.pop(ctx);
-
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                          "오늘 메모가 저장되었습니다.",
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
+                              builder: (_) => TodayMemoDialog(
+                                todayGan: todayGan,
+                                todayZhi: todayZhi,
+                                today: today,
+                                todayRow: todayRow,
+                              ),
                             );
                           },
                           icon: const Icon(Icons.edit_note, size: 20),
                           label: const Text("오늘 하루 메모하기"),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 7),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
+                        )
                       ],
                     ),
                   ),
