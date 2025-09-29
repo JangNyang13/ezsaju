@@ -4,20 +4,9 @@ description: "A new Flutter project."
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-# In Windows, build-name is used as the major, minor, and patch parts
-# of the product and file versions while build-number is used as the build suffix.
-#홈바 수정,오늘의 운세 문구 추가 1056
-version: 1.0.5+6
+
+#내 사주 폰트변경 및 득세판별규칙 수정 1078
+version: 1.0.7+8
 
 environment:
   sdk: ^3.8.1
@@ -79,6 +68,9 @@ flutter:
     - assets/lottie/Foggy.json
     - assets/lottie/Weather-partly shower.json
     - assets/lottie/Weather-storm&showers(day).json
+    - assets/data/analysis/weights.json #용신 기신 판별
+    - assets/data/analysis/patterns.json
+    - assets/data/analysis/narrations.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

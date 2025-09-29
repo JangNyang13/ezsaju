@@ -41,6 +41,15 @@ class EZSajuApp extends StatelessWidget {
           ? MainNavigationScreen(key: MainNavigationScreen.navKey)
           : const OnboardingScreen(),
       debugShowCheckedModeBanner: false,
+
+      // ✅ 시스템 글꼴 크기 무시하고 고정
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+          child: child!,
+        );
+      },
     );
   }
 }
+

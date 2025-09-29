@@ -269,7 +269,7 @@ class _SquareBox extends StatelessWidget {
                         text,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'SourceHanSansSC',
+                          fontFamily: 'HangGang',
                           fontWeight: FontWeight.w300,
                           fontSize: charFs,
                           height: 1.0,

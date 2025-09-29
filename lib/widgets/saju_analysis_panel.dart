@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ezsaju/models/saju_data.dart';
 
 import '../constants/text_styles.dart';
+import '../screens/strength_detail_screen.dart';
 import '../services/manse_loader.dart';
 import '../services/saju_calculator.dart';
 import '../services/ten_god_calculator.dart';
@@ -12,7 +14,10 @@ import '../utils/daeun_calculator.dart';
 import 'saju_board.dart';
 import 'fortune_block.dart';
 
-class SajuAnalysisPanel extends StatefulWidget {
+// Provider
+import '../providers/analysis_providers.dart';
+
+class SajuAnalysisPanel extends ConsumerStatefulWidget {
   const SajuAnalysisPanel({
     super.key,
     required this.title,
@@ -29,10 +34,10 @@ class SajuAnalysisPanel extends StatefulWidget {
   final EdgeInsets padding;
 
   @override
-  State<SajuAnalysisPanel> createState() => _SajuAnalysisPanelState();
+  ConsumerState<SajuAnalysisPanel> createState() => _SajuAnalysisPanelState();
 }
 
-class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
+class _SajuAnalysisPanelState extends ConsumerState<SajuAnalysisPanel> {
   late final Future<Map<String, Map<String, dynamic>>> _manseFuture;
 
   int? _selDaeunIdx;  // 0~7
@@ -40,7 +45,7 @@ class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
   int _selMonth = 1;  // 월운 선택 월
   bool _initialized = false;
 
-  @override //같은 키로 유지되어도 상태를 재 초기화해줌.
+  @override
   void didUpdateWidget(covariant SajuAnalysisPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.birth != widget.birth ||
@@ -101,15 +106,13 @@ class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
         final dayZhiTG   = calcTenGodBySaju(saju, saju.dayZhi,  isBranch: true);
         final hourZhiTG  = hasHour ? calcTenGodBySaju(saju, hourZhiText, isBranch: true) : '—';
 
-        // ── 오행 카운트(천간+지지 합산) ──────────────────────────────
+        // ── 오행 카운트 ─────────────────────────────────────────────
         final counts = <String, int>{'목': 0, '화': 0, '토': 0, '금': 0, '수': 0};
         void addElem(String? e) { if (e != null && counts.containsKey(e)) counts[e] = counts[e]! + 1; }
-        // 천간
         addElem(stemToElement[saju.yearGan]);
         addElem(stemToElement[saju.monthGan]);
         addElem(stemToElement[saju.dayGan]);
         if (hasHour) addElem(stemToElement[hourGanText]);
-        // 지지
         addElem(branchToElement[saju.yearZhi]);
         addElem(branchToElement[saju.monthZhi]);
         addElem(branchToElement[saju.dayZhi]);
@@ -122,7 +125,6 @@ class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
         final currentAge = DaeunCalculator.getCurrentAge(widget.birth);
         final currentPeriod = DaeunCalculator.getDaeunAtAge(daeun, currentAge);
 
-        // 최초 선택값
         if (!_initialized && periods.isNotEmpty) {
           final currIdx = currentPeriod == null
               ? 0
@@ -165,7 +167,88 @@ class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
               Divider(color: scheme.outlineVariant, thickness: 1),
               const SizedBox(height: 12),
 
-              // 2) 하단 대운/세운/월운
+              // 2) 사주 해석 카드
+              Consumer(builder: (context, ref, _) {
+                final asyncReport = ref.watch(analysisReportProvider(saju));
+                return asyncReport.when(
+                  data: (report) => Card(
+                    color: scheme.surfaceContainerHighest,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("📖 내 사주 해석",
+                              style: AppTextStyles.titleLargeColor(scheme.onSurface)),
+                          const SizedBox(height: 8),
+
+                          // 신강/신약 레벨 요약 + 상세 버튼
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "신강도: ${report.strengthScore} (${report.strengthLevel})",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => StrengthDetailScreen(report: report),
+                                    ),
+                                  );
+                                },
+                                child: const Text("상세 해석 보기"),
+                              ),
+                            ],
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, _) =>
+                      Text("해석 오류: $e", style: TextStyle(color: scheme.error)),
+                );
+              }),
+
+
+              const SizedBox(height: 16),
+
+              // 3) 오늘 운세 카드
+            //  Consumer(builder: (context, ref, _) {
+            //    final asyncFortune = ref.watch(todayFortuneProvider(saju));
+            //    return asyncFortune.when(
+            //      data: (fortune) => Card(
+            //        color: scheme.surfaceContainerHighest,
+            //        child: Padding(
+            //          padding: const EdgeInsets.all(16),
+            //          child: Column(
+            //            crossAxisAlignment: CrossAxisAlignment.start,
+            //            children: [
+            //              Text("🔮 오늘의 운세", style: AppTextStyles.titleLargeColor(scheme.onSurface)),
+            //              const SizedBox(height: 8),
+            //              Text("등급: ${fortune.grade} (점수: ${fortune.score})"),
+            //              Text("메시지: ${fortune.message}"),
+            //              if (fortune.tags.isNotEmpty)
+            //                Text("이유: ${fortune.tags.join(', ')}"),
+            //            ],
+             //         ),
+           //         ),
+            //      ),
+            //      loading: () => const Center(child: CircularProgressIndicator()),
+            //      error: (e, _) => Text("운세 오류: $e", style: TextStyle(color: scheme.error)),
+            //    );
+            //  }),
+
+              const SizedBox(height: 24),
+              Divider(color: scheme.outlineVariant, thickness: 1),
+              const SizedBox(height: 12),
+
+              // 4) 기존 FortuneBlock
               FortuneBlock(
                 daeun: daeun,
                 periods: periods,
@@ -195,8 +278,6 @@ class _SajuAnalysisPanelState extends State<SajuAnalysisPanel> {
     );
   }
 
-
-  // ── 데이터 helpers ────────────────────────────────────────────────
   List<int> _yearsOfPeriod(DateTime birth, int startAge) {
     final startYear = birth.year + (startAge - 1);
     return List<int>.generate(10, (i) => startYear + i);
