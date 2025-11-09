@@ -105,7 +105,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //이름과 프로필 정보
+                // 이름과 프로필 정보
                 ProfileHeader(profile: profile, lunar: lunar),
 
                 const Divider(
@@ -119,8 +119,10 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                 if (_saju == null)
                   const Text('사주 데이터를 불러오는 중입니다...')
                 else ...[
-                  //사주팔자 및 신살들
+                  // 🔹 사주팔자 및 신살
                   SajuBoxView(saju: _saju!, profile: profile),
+
+                  const SizedBox(height: 8),
 
                   const Divider(
                     height: 15,
@@ -130,7 +132,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                     endIndent: 8,
                   ),
 
-                  //대운과 세운, 월운
+                  // 🔹 대운 / 세운 / 월운
                   DaewoonSection(
                     saju: _saju!,
                     birthDate: profile.birthDate,

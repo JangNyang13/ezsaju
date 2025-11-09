@@ -71,13 +71,17 @@ class SajuColumn extends StatelessWidget {
 
         GapjaBox(
           text: stem,
-          color: AppColors.fromGanji(stem),
+          color: (stem == '-' || stem.isEmpty)
+              ? AppColors.background            // 시간 모름 시 회색
+              : AppColors.fromGanji(stem),
           size: size,
         ),
         const SizedBox(height: 6),
         GapjaBox(
           text: branch,
-          color: AppColors.fromGanji(branch),
+          color: (stem == '-' || stem.isEmpty)
+              ? AppColors.background            // 시간 모름 시 회색
+              :  AppColors.fromGanji(branch),
           size: size,
         ),
 
