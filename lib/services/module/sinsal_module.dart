@@ -1,5 +1,5 @@
+//lib/services/module/sinsal_module.dart
 import '../../models/saju_data.dart';
-
 /// ------------------------------------------------------------
 /// 신살(神煞) 모듈 엔진
 /// ------------------------------------------------------------
@@ -29,9 +29,9 @@ class SinsalEngine {
       '巳': '사', '午': '오', '未': '미', '申': '신', '酉': '유',
       '戌': '술', '亥': '해',
     };
-
     // 한자 입력값이 들어오면 자동 변환
     String normalize(String char) => hanjaToHangul[char] ?? char;
+
 
     // 적용
     final yearStem = normalize(saju.yearStem);

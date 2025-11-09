@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/profile_model.dart';
 import '../constants/app_colors.dart';
+import '../providers/selected_profile_provider.dart';
+import '../providers/theme_provider.dart';
 import '../services/manse_loader.dart';
 
-class ProfileFormScreen extends StatefulWidget {
+class ProfileFormScreen extends ConsumerStatefulWidget {
   const ProfileFormScreen({super.key});
 
   @override
-  State<ProfileFormScreen> createState() => _ProfileFormScreenState();
+  ConsumerState<ProfileFormScreen> createState() => _ProfileFormScreenState();
 }
 
-class _ProfileFormScreenState extends State<ProfileFormScreen> {
+class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
   String _id = const Uuid().v4();
@@ -25,11 +28,13 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   String _gender = '남';
   String _memo = '';
 
+  bool _isEditMode = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // ✅ 수정 모드일 경우 기존 데이터 불러오기
+    // 수정 모드일 경우 기존 데이터 불러오기
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args != null && args is Profile) {
       final p = args;
@@ -42,6 +47,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       _isUnknownTime = p.isUnknownTime;
       _gender = p.gender;
       _memo = p.memo;
+      _isEditMode = true;
     }
   }
 
@@ -137,8 +143,6 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     if (_isLunar) {
       try {
         final manse = await ManseLoader.load();
-
-        // ✅ 현재 _birthDate는 양력 기준 → 그에 해당하는 음력 항목을 찾아야 함
         final match = manse.firstWhere(
               (d) =>
           d.solarYear == _birthDate.year &&
@@ -147,7 +151,6 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
           orElse: () => throw Exception('해당 날짜의 음력 데이터를 찾을 수 없습니다.'),
         );
 
-        // ✅ 찾은 항목의 음력 정보를 실제 저장용 양력으로 변환
         finalDate = DateTime(
           match.solarYear,
           match.solarMonth,
@@ -156,10 +159,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
           _birthTime.minute,
         );
 
-        // ✅ 추가로 해당 항목의 음력 정보 표시용으로 갱신
-        setState(() {
-          _isLeapMonth = match.isLeapMonth;
-        });
+        setState(() => _isLeapMonth = match.isLeapMonth);
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -171,7 +171,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
 
     final profile = Profile(
       name: _name,
-      birthDate: finalDate, // ✅ 항상 양력으로 저장
+      birthDate: finalDate,
       isLunar: _isLunar,
       isLeapMonth: _isLeapMonth,
       isUnknownTime: _isUnknownTime,
@@ -180,10 +180,27 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
       id: _id,
     );
 
-    if (!mounted) return;
-    Navigator.pop(context, profile);
-  }
+    final profilesNotifier = ref.read(profilesProvider.notifier);
+    final selectedNotifier = ref.read(selectedProfileProvider.notifier);
 
+    if (_isEditMode) {
+      await profilesNotifier.updateProfile(profile);
+
+      // ✅ 현재 선택된 프로필이 수정 대상이면 즉시 반영
+      final current = ref.read(selectedProfileProvider);
+      if (current != null && current.id == profile.id) {
+        await selectedNotifier.select(profile);
+      }
+    } else {
+      await profilesNotifier.addProfile(profile);
+      // ✅ 새로 추가된 프로필을 바로 선택 상태로 설정
+      await selectedNotifier.select(profile);
+    }
+
+
+    if (!mounted) return;
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +210,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('프로필 추가/수정'),
+        title: Text(_isEditMode ? '프로필 수정' : '프로필 추가'),
         centerTitle: true,
         backgroundColor: AppColors.background,
       ),
@@ -304,11 +321,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                   child: SwitchListTile(
                     dense: true,
                     visualDensity: VisualDensity.compact,
-                    title: const Text(
-                      '시간 모름',
-                      style: TextStyle(fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    title: const Text('시간 모름', style: TextStyle(fontSize: 14)),
                     contentPadding: EdgeInsets.zero,
                     value: _isUnknownTime,
                     onChanged: (v) => setState(() => _isUnknownTime = v),
@@ -337,7 +350,7 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('저장', style: TextStyle(fontSize: 18)),
+              child: Text(_isEditMode ? '수정 완료' : '저장', style: const TextStyle(fontSize: 18)),
             ),
           ],
         ),

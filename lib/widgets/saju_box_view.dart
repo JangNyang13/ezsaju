@@ -21,29 +21,64 @@ class SajuBoxView extends StatelessWidget {
     Map<String, List<String>> extractByJu(String juLabel) {
       final good = (sinsal['길신'] as List<dynamic>)
           .cast<String>()
-          .where((s) => s.contains('($juLabel)'))
+          .where((s) => s.contains(juLabel))
           .toList();
       final bad = (sinsal['흉신'] as List<dynamic>)
           .cast<String>()
-          .where((s) => s.contains('($juLabel)'))
+          .where((s) => s.contains(juLabel))
           .toList();
       return {'good': good, 'bad': bad};
     }
+
+    //시간 모름 시 더미(빈) 데이터 구성
+    final placeholderSaju = SajuData(
+      yearStem: '-',
+      yearBranch: '-',
+      monthStem: '-',
+      monthBranch: '-',
+      dayStem: '-',
+      dayBranch: '-',
+      hourStem: '-',
+      hourBranch: '-',
+    );
+    final emptyTenGods = {
+      '시간': '-',
+      '시지': '-',
+    };
+    final emptyUnse = {
+      '시지': '-',
+    };
+    final emptySinsal = {
+      'good': ['-'],
+      'bad': ['-'],
+    };
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!profile.isUnknownTime)
-          SajuColumn(
-            label: '시주',
-            stem: saju.hourStem,
-            branch: saju.hourBranch,
-            tenGods: tenGods,
-            unse: unse,
-            sinsal: extractByJu('시주'),
-            saju: saju,
-          ),
+        // 시주
+        profile.isUnknownTime
+            ? SajuColumn(
+          label: '시주',
+          stem: '-',
+          branch: '-',
+          tenGods: emptyTenGods,
+          unse: emptyUnse,
+          sinsal: emptySinsal,
+          saju: placeholderSaju,
+        )
+            : SajuColumn(
+          label: '시주',
+          stem: saju.hourStem,
+          branch: saju.hourBranch,
+          tenGods: tenGods,
+          unse: unse,
+          sinsal: extractByJu('시주'),
+          saju: saju,
+        ),
+
+        // 일주
         SajuColumn(
           label: '일주',
           stem: saju.dayStem,
@@ -53,6 +88,8 @@ class SajuBoxView extends StatelessWidget {
           sinsal: extractByJu('일주'),
           saju: saju,
         ),
+
+        // 월주
         SajuColumn(
           label: '월주',
           stem: saju.monthStem,
@@ -62,6 +99,8 @@ class SajuBoxView extends StatelessWidget {
           sinsal: extractByJu('월주'),
           saju: saju,
         ),
+
+        // 년주
         SajuColumn(
           label: '년주',
           stem: saju.yearStem,
