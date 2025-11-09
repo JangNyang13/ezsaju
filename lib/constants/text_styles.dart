@@ -1,34 +1,47 @@
-// lib/constants/text_styles.dart
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
+/// EZ 사주 앱의 전역 텍스트 스타일 모음
 class AppTextStyles {
-  static const String fontFamily = 'NotoSansKR';
-
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
+  static const titleLarge = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: AppColors.textPrimary,
   );
 
-  static const TextStyle body = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 16,
-    fontWeight: FontWeight.w300,
+  static const titleMedium = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
   );
 
-  static const TextStyle caption = TextStyle(
-    fontFamily: fontFamily,
+  static const body = TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.normal,
+    color: AppColors.textPrimary,
+  );
+
+  static const bodySecondary = TextStyle(
     fontSize: 14,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textSecondary,
   );
 
-  // ✅ 헬퍼: 색상/굵기 적용
-  static TextStyle bodyW500(Color color) =>
-      body.copyWith(color: color, fontWeight: FontWeight.w500);
+  static const caption = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w300,
+    color: AppColors.textSecondary,
+  );
 
-  static TextStyle captionW500(Color color) =>
-      caption.copyWith(color: color, fontWeight: FontWeight.w500);
+  static TextStyle sixtyGapja(Color color) {
+    return TextStyle(
+      fontFamily: 'SourceHanSansSC',
+      fontSize: 36,
+      fontWeight: FontWeight.w900,
+      color: color,
+      height: 1.0,
+      letterSpacing: 0.5,
+    );
+  }
 
-  static TextStyle titleLargeColor(Color color) =>
-      titleLarge.copyWith(color: color);
 }

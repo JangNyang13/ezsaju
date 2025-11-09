@@ -1,336 +1,347 @@
-// lib/screens/profile_form_screen.dart
-// --------------------------------------------------------------
-// 프로필 입력/수정 폼
-//  - profile + index 파라미터가 주어지면 "편집" 모드, 없으면 "추가" 모드
-// --------------------------------------------------------------
-
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import '../models/profile_model.dart';
+import '../constants/app_colors.dart';
+import '../services/manse_loader.dart';
 
-import '../repositories/profiles_repository.dart';
-import '../providers/profiles_provider.dart';
-import '../models/user_profile.dart';
-
-// ✅ 추가
-import '../utils/lunar_converter.dart'; //음력->양력 변환
-import '../models/saju_form_result.dart'; //재활용
-
-enum CalendarKind { solar, lunarPlain, lunarLeap }
-
-class ProfileFormScreen extends ConsumerStatefulWidget {
-  const ProfileFormScreen({super.key, this.profile, this.index, this.popResultOnly = false,});
-
-  final UserProfile? profile; // 편집 대상
-  final int? index;           // 해당 인덱스
-  final bool popResultOnly; //조회용 확인
-
-  bool get isEdit => profile != null && index != null;
+class ProfileFormScreen extends StatefulWidget {
+  const ProfileFormScreen({super.key});
 
   @override
-  ConsumerState<ProfileFormScreen> createState() => _ProfileFormScreenState();
+  State<ProfileFormScreen> createState() => _ProfileFormScreenState();
 }
 
-class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
+class _ProfileFormScreenState extends State<ProfileFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
 
-  String _gender = 'M';
-  DateTime _birthDate = DateTime(2000, 1, 1);
+  String _id = const Uuid().v4();
+  String _name = '';
+  DateTime _birthDate = DateTime.now();
   TimeOfDay _birthTime = const TimeOfDay(hour: 12, minute: 0);
-  bool _timeUnknown = false; // 기본값: 시간 입력
-  CalendarKind _calKind = CalendarKind.solar;
+  bool _isLunar = false;
+  bool _isLeapMonth = false;
+  bool _isUnknownTime = false;
+  String _gender = '남';
+  String _memo = '';
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.isEdit) {
-      final p = widget.profile!;
-      _nameCtrl.text = p.name;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // ✅ 수정 모드일 경우 기존 데이터 불러오기
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args != null && args is Profile) {
+      final p = args;
+      _id = p.id;
+      _name = p.name;
+      _birthDate = p.birthDate;
+      _birthTime = TimeOfDay(hour: p.birthDate.hour, minute: p.birthDate.minute);
+      _isLunar = p.isLunar;
+      _isLeapMonth = p.isLeapMonth;
+      _isUnknownTime = p.isUnknownTime;
       _gender = p.gender;
-      _birthDate = DateTime(p.birth.year, p.birth.month, p.birth.day);
-      _birthTime = TimeOfDay(hour: p.birth.hour, minute: p.birth.minute);
-      _timeUnknown = p.timeUnknown; // 시간 모름 상태 유지
-      // 캘린더 종류는 저장 안 하므로 기본 solar 유지
+      _memo = p.memo;
     }
   }
 
-  String _datePrefix() {
-    switch (_calKind) {
-      case CalendarKind.solar: return '양력';
-      case CalendarKind.lunarPlain: return '음력';
-      case CalendarKind.lunarLeap: return '음력(윤달)';
-    }
-  }
+  // 🗓 생년월일 선택
+  Future<void> _selectDate() async {
+    DateTime tempDate = _birthDate;
 
-  String _ymd(DateTime d) => '${d.year}년 ${d.month}월 ${d.day}일';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        foregroundColor: Colors.black87,
-        titleTextStyle: Theme.of(context)
-            .textTheme
-            .titleLarge!
-            .copyWith(color: Colors.black87),
-        title: Text(widget.isEdit ? '프로필 편집' : '프로필 추가'),
+    await showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
+      builder: (context) {
+        return SizedBox(
+          height: 320,
+          child: Column(
             children: [
-              _nameGenderRow(),
-              const SizedBox(height: 24),
-              _calendarKindSegment(context),
-              const SizedBox(height: 24),
-              _birthRow(),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.save),        // ✅ 필수
-                label: const Text('저장'),
-                onPressed: _save,
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text('생년월일 선택',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: _birthDate,
+                  minimumDate: DateTime(1900, 1, 1),
+                  maximumDate: DateTime(2100, 12, 31),
+                  onDateTimeChanged: (newDate) => tempDate = newDate,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        setState(() => _birthDate = tempDate);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('확인'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  /* ── 위젯 파트 ─────────────────────────────── */
-  Widget _nameGenderRow() => Row(children: [
-    Expanded(
-      child: TextFormField(
-        controller: _nameCtrl,
-        decoration: const InputDecoration(labelText: '이름'),
-        validator: (v) => v == null || v.trim().isEmpty ? '이름은 필수입니다' : null,
-      ),
-    ),
-    const SizedBox(width: 12),
-    ToggleButtons(
-      isSelected: [_gender == 'M', _gender == 'F'],
-      onPressed: (i) => setState(() => _gender = i == 0 ? 'M' : 'F'),
-      children: const [
-        Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('남')),
-        Padding(padding: EdgeInsets.symmetric(horizontal: 8), child: Text('여')),
-      ],
-    ),
-  ]);
+  // 🕒 시간 선택
+  Future<void> _selectTime() async {
+    if (_isUnknownTime) return;
 
-  Widget _calendarKindSegment(BuildContext ctx) => SizedBox(
-    width: double.infinity,
-    child: SegmentedButton<CalendarKind>(
-      segments: const [
-        ButtonSegment(value: CalendarKind.solar, label: Text('양력')),
-        ButtonSegment(value: CalendarKind.lunarPlain, label: Text('음력 평달')),
-        ButtonSegment(value: CalendarKind.lunarLeap, label: Text('음력 윤달')),
-      ],
-      selected: {_calKind},
-      onSelectionChanged: (s) => setState(() => _calKind = s.first),
-    ),
-  );
-
-  Widget _birthRow() => Row(children: [
-    Expanded(
-      child: ListTile(
-        title: const Text('출생일'),
-        subtitle: Text('${_datePrefix()} ${_ymd(_birthDate)}'),
-        onTap: _pickDate,
-      ),
-    ),
-    const SizedBox(width: 8),
-    Expanded(
-      child: ListTile(
-        title: const Text('출생 시간'),
-        subtitle: Text(_timeUnknown ? '모름' : '${_birthTime.hour}시 ${_birthTime.minute}분'),
-        onTap: _pickTime,
-      ),
-    ),
-  ]);
-
-  /* ── Picker 메서드 (날짜/시간) ───────────────── */
-  Future<void> _pickDate() async {
-    DateTime temp = _birthDate;
-    await showModalBottomSheet(
+    final picked = await showTimePicker(
       context: context,
-      isScrollControlled: true, // ✅ 바텀시트 높이 제어
-      backgroundColor: Colors.white,
-      builder: (ctx) => SafeArea( // ✅ 네비게이션바/노치 회피
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-          ),
-          child: SizedBox(
-            height: 320,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: _birthDate,
-                    minimumDate: DateTime(1900, 1, 1),
-                    maximumDate: DateTime(2100, 12, 31),
-                    onDateTimeChanged: (d) => temp = d,
-                  ),
-                ),
-                CupertinoButton(
-                  child: const Text('확인'),
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    setState(() => _birthDate = temp);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      initialTime: _birthTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
+
+    if (picked != null) {
+      setState(() => _birthTime = picked);
+    }
   }
 
-
-  Future<void> _pickTime() async {
-    TimeOfDay temp = _birthTime;
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true, // ✅ 전체 높이 제어 가능
-      backgroundColor: Colors.white,
-      builder: (ctx) => SafeArea( // ✅ 네비게이션 바/노치 피하기
-        child: StatefulBuilder(
-          builder: (ctx, setModalState) => Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            ),
-            child: SizedBox(
-              height: 340,
-              child: Column(
-                children: [
-                  SwitchListTile(
-                    title: const Text('시간 모름'),
-                    value: _timeUnknown,
-                    onChanged: (v) =>
-                        setModalState(() => _timeUnknown = v),
-                  ),
-                  if (!_timeUnknown)
-                    Expanded(
-                      child: CupertinoDatePicker(
-                        mode: CupertinoDatePickerMode.time,
-                        initialDateTime: DateTime(
-                            2024, 1, 1, temp.hour, temp.minute),
-                        use24hFormat: true,
-                        onDateTimeChanged: (d) =>
-                            setModalState(() =>
-                            temp = TimeOfDay.fromDateTime(d)),
-                      ),
-                    ),
-                  CupertinoButton(
-                    child: const Text('확인'),
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      setState(() {
-                        _timeUnknown
-                            ? _birthTime = const TimeOfDay(
-                            hour: 12, minute: 0)
-                            : _birthTime = temp;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  /* ── 저장 ─────────────────────────────────────────── */
-  Future<void> _save() async {
+  Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
+    _formKey.currentState!.save();
 
-    // 1) 사용자가 선택한 날짜(양력 or 음력)를 '양력'으로 변환
-    DateTime? solarDate;
-    if (_calKind == CalendarKind.solar) {
-      solarDate = _birthDate;
-    } else {
-      final isLeap = _calKind == CalendarKind.lunarLeap;
-      solarDate = await LunarConverter.lunarToSolar(
-        lunarYear: _birthDate.year,
-        lunarMonth: _birthDate.month,
-        lunarDay: _birthDate.day,
-        isLeapMonth: isLeap,
-      );
-      if (solarDate == null) {
+    DateTime finalDate = DateTime(
+      _birthDate.year,
+      _birthDate.month,
+      _birthDate.day,
+      _birthTime.hour,
+      _birthTime.minute,
+    );
+
+    // ✅ 음력 선택 시 → 양력으로 변환해서 저장
+    if (_isLunar) {
+      try {
+        final manse = await ManseLoader.load();
+
+        // ✅ 현재 _birthDate는 양력 기준 → 그에 해당하는 음력 항목을 찾아야 함
+        final match = manse.firstWhere(
+              (d) =>
+          d.solarYear == _birthDate.year &&
+              d.solarMonth == _birthDate.month &&
+              d.solarDay == _birthDate.day,
+          orElse: () => throw Exception('해당 날짜의 음력 데이터를 찾을 수 없습니다.'),
+        );
+
+        // ✅ 찾은 항목의 음력 정보를 실제 저장용 양력으로 변환
+        finalDate = DateTime(
+          match.solarYear,
+          match.solarMonth,
+          match.solarDay,
+          _birthTime.hour,
+          _birthTime.minute,
+        );
+
+        // ✅ 추가로 해당 항목의 음력 정보 표시용으로 갱신
+        setState(() {
+          _isLeapMonth = match.isLeapMonth;
+        });
+      } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('해당 음력 날짜를 양력으로 변환할 수 없습니다. 윤달/일자 확인')),
+          const SnackBar(content: Text('⚠️ 음력 변환 중 오류가 발생했습니다. (데이터 없음)')),
         );
         return;
       }
     }
 
-    // 2) 시간 모름이면 12:00 고정
-    final birthDT = DateTime(
-      solarDate.year,
-      solarDate.month,
-      solarDate.day,
-      _timeUnknown ? 12 : _birthTime.hour,
-      _timeUnknown ? 0  : _birthTime.minute,
+    final profile = Profile(
+      name: _name,
+      birthDate: finalDate, // ✅ 항상 양력으로 저장
+      isLunar: _isLunar,
+      isLeapMonth: _isLeapMonth,
+      isUnknownTime: _isUnknownTime,
+      gender: _gender,
+      memo: _memo,
+      id: _id,
     );
 
-    // 3) 결과만 돌려주는 모드라면 저장하지 않고 pop
-    if (widget.popResultOnly) {
-      if (!mounted) return;
-      Navigator.pop(
-        context,
-        SajuFormResult(
-          name: _nameCtrl.text.trim(),
-          birth: birthDT,
-          gender: _gender,
-          timeUnknown: _timeUnknown,
-        ),
-      );
-      return;
-    }
-
-    // 4) 저장/업데이트 (기존 로직 유지)
-    try {
-      if (widget.isEdit) {
-        final updated = widget.profile!.copyWith(
-          name: _nameCtrl.text.trim(),
-          gender: _gender,
-          birth: birthDT,
-          timeUnknown: _timeUnknown,
-        );
-        await ProfilesRepository.instance.updateProfile(widget.index!, updated);
-      } else {
-        await ProfilesRepository.instance.addProfile(
-          name: _nameCtrl.text.trim(),
-          birth: birthDT,
-          gender: _gender,
-          timeUnknown: _timeUnknown,
-        );
-      }
-      if (!mounted) return;
-      ref.invalidate(profilesProvider);
-      Navigator.pop(context);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-    }
+    if (!mounted) return;
+    Navigator.pop(context, profile);
   }
 
 
   @override
-  void dispose() {
-    _nameCtrl.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final timeLabel = _isUnknownTime
+        ? '모름'
+        : '${_birthTime.hour.toString().padLeft(2, '0')}:${_birthTime.minute.toString().padLeft(2, '0')}';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('프로필 추가/수정'),
+        centerTitle: true,
+        backgroundColor: AppColors.background,
+      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // 이름 + 성별
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    initialValue: _name,
+                    decoration: const InputDecoration(labelText: '이름'),
+                    validator: (v) => v == null || v.isEmpty ? '이름을 입력하세요' : null,
+                    onSaved: (v) => _name = v!.trim(),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ToggleButtons(
+                  borderRadius: BorderRadius.circular(8),
+                  selectedColor: Colors.white,
+                  color: Colors.black87,
+                  fillColor: AppColors.primary,
+                  isSelected: [_gender == '남', _gender == '여'],
+                  onPressed: (index) {
+                    setState(() => _gender = index == 0 ? '남' : '여');
+                  },
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Text('남'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Text('여'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // 생년월일 + 시간
+            Row(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: ListTile(
+                    title: Text(
+                      '${_birthDate.year}년 ${_birthDate.month}월 ${_birthDate.day}일',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    trailing: const Icon(Icons.calendar_month),
+                    onTap: _selectDate,
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: ListTile(
+                    title: Text('시간: $timeLabel', style: const TextStyle(fontSize: 16)),
+                    trailing: const Icon(Icons.access_time),
+                    onTap: _isUnknownTime ? null : _selectTime,
+                  ),
+                ),
+              ],
+            ),
+
+            // 음력/윤달 + 시간모름
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Wrap(
+                    spacing: 2,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      FilterChip(
+                        label: const Text('양력'),
+                        selected: !_isLunar,
+                        onSelected: null,
+                        disabledColor: Colors.grey.shade200,
+                        selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                        labelStyle: TextStyle(
+                          color: _isLunar ? Colors.black54 : AppColors.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      FilterChip(
+                        label: const Text('음력'),
+                        selected: _isLunar,
+                        onSelected: (v) => setState(() => _isLunar = v),
+                      ),
+                      if (_isLunar)
+                        FilterChip(
+                          label: const Text('윤달'),
+                          selected: _isLeapMonth,
+                          onSelected: (v) => setState(() => _isLeapMonth = v),
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: SwitchListTile(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    title: const Text(
+                      '시간 모름',
+                      style: TextStyle(fontSize: 14),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    contentPadding: EdgeInsets.zero,
+                    value: _isUnknownTime,
+                    onChanged: (v) => setState(() => _isUnknownTime = v),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+
+            // 메모
+            TextFormField(
+              initialValue: _memo,
+              decoration: const InputDecoration(labelText: '메모'),
+              maxLines: 3,
+              onSaved: (v) => _memo = v ?? '',
+            ),
+
+            const SizedBox(height: 30),
+
+            ElevatedButton(
+              onPressed: _saveProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('저장', style: TextStyle(fontSize: 18)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

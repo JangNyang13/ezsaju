@@ -1,73 +1,157 @@
 // lib/screens/main_navigation_screen.dart
-// --------------------------------------------------------------
-// 하단 NavigationBar (Material 3)
-//   • 활성 탭  : 배경 = primary, 아이콘·라벨 = secondary
-//   • 비활성 탭: 배경 = secondary, 아이콘·라벨 = primary
-// --------------------------------------------------------------
-
 import 'package:flutter/material.dart';
-
-import '../widgets/bubbled_nav_bar.dart';
-import 'fortune_today_screen.dart';
-import 'saju_lookup_screen.dart';
 import 'daily_calendar_screen.dart';
-import 'my_saju_screen.dart';
+import 'daily_info_screen.dart';
+import 'saju_viewer_screen.dart';
 import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
 
-  // 🔑 어디서든 접근할 수 있는 GlobalKey
   static final GlobalKey<MainNavigationScreenState> navKey =
   GlobalKey<MainNavigationScreenState>();
 
-  // ✅ 재사용할 헬퍼 함수
-  static void goToTab(int index) {
-    navKey.currentState?._onTap(index);
-  }
+  static void goToTab(int index) => navKey.currentState?._onTap(index);
 
   @override
   State<MainNavigationScreen> createState() => MainNavigationScreenState();
 }
 
-class MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _selectedIndex = 2;
+class MainNavigationScreenState extends State<MainNavigationScreen>
+    with SingleTickerProviderStateMixin {
+  int _selectedIndex = 1;
+  late final AnimationController _ctrl;
+  late Animation<double> _posAnim;
 
   final _pages = const [
-    DailyCalendarScreen(),
-    SajuLookupScreen(),
-    FortuneTodayScreen(),
-    MySajuScreen(),
-    SettingsScreen(),
+    DailyCalendarScreen(), // 1️⃣ 만세력
+    DailyInfoScreen(),     // 2️⃣ 오늘의 정보
+    SajuViewerScreen(),    // 3️⃣ 사주조회
+    SettingsScreen(),      // 4️⃣ 설정
   ];
 
-  void _onTap(int idx) => setState(() => _selectedIndex = idx);
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+    _posAnim = AlwaysStoppedAnimation(_selectedIndex.toDouble());
+  }
+
+  void _onTap(int idx) {
+    setState(() => _selectedIndex = idx);
+    _posAnim = Tween<double>(
+      begin: _posAnim.value,
+      end: idx.toDouble(),
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _ctrl.forward(from: 0);
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final bg = scheme.surfaceContainerHighest;
+    final active = scheme.primary;
+    final inactive = scheme.secondary;
+
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: SafeArea( // ✅ 홈바 영역 피하기
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 4), // 살짝 띄워주면 더 안전
-          child: BubbledNavBar(
-            items: const [
-              NavBarItem(icon: Icons.calendar_today, label: '일진달력'),
-              NavBarItem(icon: Icons.search, label: '사주조회'),
-              NavBarItem(icon: Icons.auto_graph_rounded, label: '오늘의 운세'),
-              NavBarItem(icon: Icons.person, label: '내 사주조회'),
-              NavBarItem(icon: Icons.settings, label: '설정'),
-            ],
-            currentIndex: _selectedIndex,
-            onTap: _onTap,
-            backgroundColor: const Color(0xFFfaf9f6),
-            activeColor: scheme.primary,
-            inactiveColor: const Color(0xFFcccccc),
-          ),
+      body: SafeArea(child: _pages[_selectedIndex]),
+      bottomNavigationBar: SafeArea(
+        child: _buildBubbledNavBar(
+          activeColor: active,
+          inactiveColor: inactive,
+          backgroundColor: bg,
         ),
       ),
     );
   }
 
+  // 🔹 BubbledNavBar 내부 코드 통합
+  Widget _buildBubbledNavBar({
+    required Color activeColor,
+    required Color inactiveColor,
+    required Color backgroundColor,
+  }) {
+    const height = 64.0;
+    const indicatorHeight = 3.0;
+    const icons = [
+      Icons.calendar_month,
+      Icons.wb_sunny_rounded,
+      Icons.auto_graph_rounded,
+      Icons.settings,
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final itemWidth = width / icons.length;
+
+        return Container(
+          height: height,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(60),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Stack(
+            alignment: Alignment.topLeft,
+            children: [
+              // 캡슐 인디케이터
+              AnimatedBuilder(
+                animation: _posAnim,
+                builder: (context, _) {
+                  return Positioned(
+                    top: 0,
+                    left: _posAnim.value * itemWidth + itemWidth * 0.2,
+                    width: itemWidth * 0.6,
+                    child: Container(
+                      height: indicatorHeight,
+                      decoration: BoxDecoration(
+                        color: activeColor,
+                        borderRadius: BorderRadius.circular(indicatorHeight),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              // 아이콘 버튼들
+              Row(
+                children: List.generate(icons.length, (i) {
+                  final selected = i == _selectedIndex;
+                  final color = selected ? activeColor : inactiveColor;
+                  return Expanded(
+                    child: InkWell(
+                      onTap: () => _onTap(i),
+                      splashColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      child: Center(
+                        child: Icon(
+                          icons[i],
+                          color: color,
+                          size: 38,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }

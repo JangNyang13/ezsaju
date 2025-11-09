@@ -8,12 +8,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ezsaju/main.dart';
+import 'package:ezsaju/app.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const EZSajuApp(seenOnboarding: true));
+    await tester.pumpWidget(const EZSajuApp());
 
 
     // Verify that our counter starts at 0.

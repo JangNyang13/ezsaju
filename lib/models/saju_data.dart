@@ -1,54 +1,55 @@
-// lib/models/saju_data.dart
-import '../utils/elemental_relations.dart';
-
 class SajuData {
-  final String year;   // 예: '甲子'
-  final String month;  // 예: '乙丑'
-  final String day;    // 예: '丙寅'
-  final String? hour;  // ✅ '丁卯' 또는 null(시간 모름)
+  final String yearStem;
+  final String yearBranch;
+  final String monthStem;
+  final String monthBranch;
+  final String dayStem;
+  final String dayBranch;
+  final String hourStem;
+  final String hourBranch;
 
   const SajuData({
-    required this.year,
-    required this.month,
-    required this.day,
-    this.hour, // ✅
+    required this.yearStem,
+    required this.yearBranch,
+    required this.monthStem,
+    required this.monthBranch,
+    required this.dayStem,
+    required this.dayBranch,
+    required this.hourStem,
+    required this.hourBranch,
   });
 
-  Map<String, dynamic> toJson() => {
-    'year': year,
-    'month': month,
-    'day': day,
-    if (hour != null) 'hour': hour, // ✅ 없으면 저장 안 함
-  };
+  // getter (기존처럼 간지 조합)
+  String get yearPillar => '$yearStem$yearBranch';
+  String get monthPillar => '$monthStem$monthBranch';
+  String get dayPillar => '$dayStem$dayBranch';
+  String get hourPillar => '$hourStem$hourBranch';
 
-  factory SajuData.fromJson(Map<String, dynamic> j) => SajuData(
-    year:  j['year']  as String,
-    month: j['month'] as String,
-    day:   j['day']   as String,
-    hour:  j['hour']  as String?, // ✅
-  );
-
-  /// 오행 리스트(천간 기준). 시주가 없으면 3개만.
-  List<String> get elements {
-    final out = <String>[
-      stemToElement[yearGan]  ?? '-',
-      stemToElement[monthGan] ?? '-',
-      stemToElement[dayGan]   ?? '-',
-    ];
-    if (hasHour) out.add(stemToElement[hourGan] ?? '-');
-    return out;
+  // JSON 직렬화
+  Map<String, dynamic> toJson() {
+    return {
+      'yearStem': yearStem,
+      'yearBranch': yearBranch,
+      'monthStem': monthStem,
+      'monthBranch': monthBranch,
+      'dayStem': dayStem,
+      'dayBranch': dayBranch,
+      'hourStem': hourStem,
+      'hourBranch': hourBranch,
+    };
   }
-}
 
-extension SajuSplit on SajuData {
-  String get yearGan  => year.substring(0, 1);
-  String get yearZhi  => year.substring(1);
-  String get monthGan => month.substring(0, 1);
-  String get monthZhi => month.substring(1);
-  String get dayGan   => day.substring(0, 1);
-  String get dayZhi   => day.substring(1);
-
-  bool   get hasHour  => hour != null && hour!.length >= 2;
-  String get hourGan  => hasHour ? hour!.substring(0, 1) : '';
-  String get hourZhi  => hasHour ? hour!.substring(1)     : '';
+  // JSON 역직렬화
+  factory SajuData.fromJson(Map<String, dynamic> json) {
+    return SajuData(
+      yearStem: json['yearStem'] as String,
+      yearBranch: json['yearBranch'] as String,
+      monthStem: json['monthStem'] as String,
+      monthBranch: json['monthBranch'] as String,
+      dayStem: json['dayStem'] as String,
+      dayBranch: json['dayBranch'] as String,
+      hourStem: json['hourStem'] as String,
+      hourBranch: json['hourBranch'] as String,
+    );
+  }
 }
