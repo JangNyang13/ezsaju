@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/text_styles.dart';
 import '../models/calendar_day.dart';
-import '../models/profile_model.dart';
 import '../models/saju_data.dart';
 import '../models/stem_branch.dart';
-import '../providers/selected_profile_provider.dart';
 import '../services/manse_loader.dart';
 import '../services/saju_calculator.dart';
 import '../constants/app_colors.dart';
@@ -25,7 +23,7 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
   SajuData? saju;
 
   /// 절기 + 사주 데이터 로드 함수
-  Future<void> _loadTodayData(Profile profile) async {
+  Future<void> _loadTodayData() async {
     final manse = await ManseLoader.load();
     final today = DateTime.now();
 
@@ -49,9 +47,9 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
       }
     }
 
-    // 사주 계산
+    // 사주 계산 (오늘 날짜 기준)
     final calculator = SajuCalculator(manse);
-    final sajuData = calculator.calculate(profile.birthDate);
+    final sajuData = calculator.calculate(today);
 
     if (!mounted) return;
     setState(() {
@@ -61,26 +59,13 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadTodayData();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final profile = ref.watch(selectedProfileProvider);
-
-    // 프로필이 불러와지고 아직 오늘 데이터가 없으면 한 번만 실행
-    if (profile != null && todayData == null) {
-      Future.microtask(() => _loadTodayData(profile));
-    }
-
-    // 프로필이 아직 없을 때
-    if (profile == null) {
-      return const Scaffold(
-        body: Center(
-          child: Text(
-            '⚠️ 먼저 프로필을 선택하세요.',
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -99,12 +84,12 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
       ),
       body: todayData == null
           ? const Center(child: CircularProgressIndicator())
-          : _buildContent(profile),
+          : _buildContent(),
     );
   }
 
   /// 메인 콘텐츠
-  Widget _buildContent(Profile profile) {
+  Widget _buildContent() {
     final today = todayData!;
     final iljin = today.hdGanJee; // 예: 甲子
     final termName = today.termName ?? "절기 없음";
@@ -122,8 +107,8 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
           _buildIljinCard(iljin),
           const SizedBox(height: 30),
 
-          // 운세 정보 (Placeholder)
-          _buildFortunePlaceholder(profile),
+          // 운세 정보
+          _buildPersonalFortune(iljin),
         ],
       ),
     );
@@ -232,21 +217,46 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
     );
   }
 
-  /// 운세 Placeholder
-  Widget _buildFortunePlaceholder(Profile profile) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "- 공지 -\n앞으로의 진행과정",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  /// 개인 운세 카드 (이름 표시 제거)
+  Widget _buildPersonalFortune(String iljin) {
+    final fortuneMsg = switch (iljin.substring(0, 1)) {
+      '甲' => '새로운 시작에 적합한 하루입니다.',
+      '乙' => '유연하게 대처하면 복이 따릅니다.',
+      '丙' => '열정이 넘치지만 과열에 주의하세요.',
+      '丁' => '세심함이 빛나는 하루입니다.',
+      '戊' => '안정과 신뢰가 중심이 되는 날입니다.',
+      '己' => '정리와 계획에 집중하면 좋습니다.',
+      '庚' => '결단력이 필요한 시점입니다.',
+      '辛' => '차분히 행동하면 길합니다.',
+      '壬' => '마음이 넓어지는 하루입니다.',
+      '癸' => '감정이 예민해지니 휴식이 필요합니다.',
+      _ => '평온한 하루입니다.',
+    };
+
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: AppColors.card,
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: Column(
+          children: [
+            const Text('오늘의 운세', style: AppTextStyles.titleMedium),
+            const SizedBox(height: 8),
+            Text(
+              fortuneMsg,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '($iljin) 일진 기준 해석',
+              style:
+              AppTextStyles.body,
+            ),
+          ],
         ),
-        SizedBox(height: 8),
-        Text("오늘 일진 운세는 개발중입니다."),
-        Text("11월내로 완성됩니다."),
-        Text("12월에는 격국론과 해석이 추가됩니다."),
-      ],
+      ),
     );
   }
 }

@@ -21,7 +21,7 @@ class AppColors {
   static const secondary   = Color(0xFFcccccc);
   static const surface     = Color(0xFFfaf9f6);
   static const background  = Color(0xFFfaf9f6);
-  static const card        = Color(0xFFfaf9f6);
+  static const card        = Color(0xFFEFF1F3);
   static const border      = Color(0xFFDAD5C2);
   static const textPrimary = Color(0xFF424242);
   static const textSecondary = Color(0xFF777777);

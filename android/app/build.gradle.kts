@@ -47,11 +47,9 @@ android {
 
     buildTypes {
         release {
-            // ✅ 앱 최적화 옵션
             isMinifyEnabled = true
             isShrinkResources = true
 
-            // ✅ ProGuard 설정 파일 추가
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"

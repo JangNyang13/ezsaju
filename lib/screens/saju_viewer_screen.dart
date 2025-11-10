@@ -12,7 +12,8 @@ import '../widgets/saju_box_view.dart';
 import '../widgets/daewoon_section.dart';
 
 class SajuViewerScreen extends ConsumerStatefulWidget {
-  const SajuViewerScreen({super.key});
+  final Profile? profileOverride;
+  const SajuViewerScreen({super.key, this.profileOverride});
 
   @override
   ConsumerState<SajuViewerScreen> createState() => _SajuViewerScreenState();
@@ -29,27 +30,31 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
   }
 
   Future<void> _calculateIfProfileExists() async {
-    final profile = ref.read(selectedProfileProvider);
+    final profile = widget.profileOverride ?? ref.read(selectedProfileProvider);
     if (profile == null) return;
 
     setState(() => _loading = true);
     try {
       final manse = await ManseLoader.load();
+      if (manse.isEmpty) throw Exception('만세력 데이터 로드 실패');
+
       final calculator = SajuCalculator(manse);
       final result = calculator.calculate(profile.birthDate);
 
+      if (!mounted) return;
       setState(() {
         _saju = result;
         _loading = false;
       });
     } catch (e) {
-      setState(() => _loading = false);
       if (!mounted) return;
+      setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('⚠️ 사주 계산 실패: $e')),
       );
     }
   }
+
 
   Future<CalendarDay?> _findManseDate(Profile profile) async {
     final manse = await ManseLoader.load();
@@ -76,7 +81,8 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profile = ref.watch(selectedProfileProvider);
+    final profile = widget.profileOverride ?? ref.watch(selectedProfileProvider);
+
 
     return Scaffold(
       appBar: AppBar(

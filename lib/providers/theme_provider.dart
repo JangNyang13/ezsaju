@@ -104,6 +104,8 @@ class ProfilesNotifier extends AsyncNotifier<List<Profile>> {
 }
 
 final profilesProvider =
-AsyncNotifierProvider<ProfilesNotifier, List<Profile>>(() {
-  return ProfilesNotifier();
-});
+AsyncNotifierProvider<ProfilesNotifier, List<Profile>>(
+  ProfilesNotifier.new,
+  name: 'profilesProvider',
+);
+

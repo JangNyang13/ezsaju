@@ -5,8 +5,8 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-#내 사주 폰트변경 및 득세판별규칙 수정 1078 +9
-version: 1.0.7+9
+# v2버전 1.1.1 +10
+version: 1.1.1+10
 
 environment:
   sdk: ^3.8.1

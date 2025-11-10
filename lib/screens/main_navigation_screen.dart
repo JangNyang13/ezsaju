@@ -1,8 +1,8 @@
 // lib/screens/main_navigation_screen.dart
+import 'package:ezsaju/screens/saju_entry_screen.dart';
 import 'package:flutter/material.dart';
 import 'daily_calendar_screen.dart';
 import 'daily_info_screen.dart';
-import 'saju_viewer_screen.dart';
 import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class MainNavigationScreenState extends State<MainNavigationScreen>
   final _pages = const [
     DailyCalendarScreen(), // 1️⃣ 만세력
     DailyInfoScreen(),     // 2️⃣ 오늘의 정보
-    SajuViewerScreen(),    // 3️⃣ 사주조회
+    SajuEntryScreen(),    // 3️⃣ 사주조회
     SettingsScreen(),      // 4️⃣ 설정
   ];
 
