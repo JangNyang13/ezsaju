@@ -6,6 +6,7 @@ import '../models/saju_data.dart';
 import '../providers/selected_profile_provider.dart';
 import '../constants/app_colors.dart';
 import '../services/manse_loader.dart';
+import '../services/module/sinsal_module.dart';
 import '../services/saju_calculator.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/saju_box_view.dart';
@@ -29,6 +30,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
     _calculateIfProfileExists();
   }
 
+  /// ✅ 사주 계산 (이제 항상 양력으로 저장되어 있으므로 변환 불필요)
   Future<void> _calculateIfProfileExists() async {
     final profile = widget.profileOverride ?? ref.read(selectedProfileProvider);
     if (profile == null) return;
@@ -39,7 +41,11 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
       if (manse.isEmpty) throw Exception('만세력 데이터 로드 실패');
 
       final calculator = SajuCalculator(manse);
-      final result = calculator.calculate(profile.birthDate);
+      final result = calculator.calculate(
+        profile.birthDate,
+        isLunar: false, // ✅ 항상 양력 기준 계산
+        isLeapMonth: profile.isLeapMonth,
+      );
 
       if (!mounted) return;
       setState(() {
@@ -55,9 +61,10 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
     }
   }
 
-
+  /// ✅ 만세력 매칭 (양력 기준으로만)
   Future<CalendarDay?> _findManseDate(Profile profile) async {
     final manse = await ManseLoader.load();
+
     return manse.firstWhere(
           (d) =>
       d.solarYear == profile.birthDate.year &&
@@ -82,7 +89,6 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
   @override
   Widget build(BuildContext context) {
     final profile = widget.profileOverride ?? ref.watch(selectedProfileProvider);
-
 
     return Scaffold(
       appBar: AppBar(
@@ -109,9 +115,9 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // 이름과 프로필 정보
+                // 이름 + 프로필 헤더
                 ProfileHeader(profile: profile, lunar: lunar),
 
                 const Divider(
@@ -125,10 +131,38 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                 if (_saju == null)
                   const Text('사주 데이터를 불러오는 중입니다...')
                 else ...[
-                  // 🔹 사주팔자 및 신살
+                  // 사주팔자 및 신살
                   SajuBoxView(saju: _saju!, profile: profile),
 
-                  const SizedBox(height: 8),
+                  // 공망 표시
+                  Builder(builder: (_) {
+                    final sinsal = SinsalEngine.interpret(_saju!);
+                    final gongInfo =
+                    sinsal['공망정보'] as Map<String, List<String>>?;
+                    if (gongInfo == null) return const SizedBox.shrink();
+
+                    final yearGong = gongInfo['년공망']?.join(', ') ?? '';
+                    final dayGong = gongInfo['일공망']?.join(', ') ?? '';
+
+                    return Padding(
+                      padding:
+                      const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            '(일)공망 : $dayGong   (년)공망 : $yearGong',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              height: 1.6,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
 
                   const Divider(
                     height: 15,
@@ -138,7 +172,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                     endIndent: 8,
                   ),
 
-                  // 🔹 대운 / 세운 / 월운
+                  // 대운 / 세운 / 월운
                   DaewoonSection(
                     saju: _saju!,
                     birthDate: profile.birthDate,

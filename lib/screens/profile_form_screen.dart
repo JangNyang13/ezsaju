@@ -34,19 +34,29 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
   void initState() {
     super.initState();
 
-    // ✅ arguments에 전달된 Profile이 있으면 수정모드
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments;
       if (args is Profile) {
         setState(() {
           _editingProfile = args;
           _nameController.text = args.name;
-          _birthController.text =
-          '${args.birthDate.year.toString().padLeft(4, '0')}${args.birthDate.month.toString().padLeft(2, '0')}${args.birthDate.day.toString().padLeft(2, '0')}';
-          _hourController.text =
-          args.isUnknownTime ? '' : args.birthDate.hour.toString().padLeft(2, '0');
-          _minuteController.text =
-          args.isUnknownTime ? '' : args.birthDate.minute.toString().padLeft(2, '0');
+
+          // 음력 저장된 경우 원본 값으로 복원
+          if (args.isLunar && args.lunarYear != null) {
+            _birthController.text =
+            '${args.lunarYear!.toString().padLeft(4, '0')}${args.lunarMonth!.toString().padLeft(2, '0')}${args.lunarDay!.toString().padLeft(2, '0')}';
+          } else {
+            // 양력 저장된 경우 그대로 표시
+            _birthController.text =
+            '${args.birthDate.year.toString().padLeft(4, '0')}${args.birthDate.month.toString().padLeft(2, '0')}${args.birthDate.day.toString().padLeft(2, '0')}';
+          }
+
+          _hourController.text = args.isUnknownTime
+              ? ''
+              : args.birthDate.hour.toString().padLeft(2, '0');
+          _minuteController.text = args.isUnknownTime
+              ? ''
+              : args.birthDate.minute.toString().padLeft(2, '0');
           _isUnknownTime = args.isUnknownTime;
           _isLunar = args.isLunar;
           _isLeapMonth = args.isLeapMonth;
@@ -55,6 +65,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       }
     });
   }
+
 
   // ----------------------------
   void _showError(String msg) {
@@ -114,21 +125,53 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     final hour = _isUnknownTime ? 12 : int.tryParse(_hourController.text) ?? 12;
     final minute = _isUnknownTime ? 0 : int.tryParse(_minuteController.text) ?? 0;
 
-    // ✅ 새로 추가 or 수정 중인지 구분
+    // 🔹 기본적으로 입력값 기준 날짜 생성
+    DateTime birthDate = DateTime(year, month, day, hour, minute);
+
+    // 🔹 음력 입력 시 -> 양력으로 변환
+    if (_isLunar) {
+      try {
+        final converted = await ManseLoader.lunarToSolar(
+          lunarYear: year,
+          lunarMonth: month,
+          lunarDay: day,
+          isLeapMonth: _isLeapMonth,
+        );
+        if (converted != null) {
+          birthDate = DateTime(
+            converted.year,
+            converted.month,
+            converted.day,
+            hour,
+            minute,
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('⚠️ 음력 변환 실패: $e')),
+          );
+        }
+      }
+    }
+
+    // 프로필 객체 생성 (양력 기준으로 저장) 음력 입력 시 원본도 함께 저장
     final newProfile = Profile(
       id: _editingProfile?.id ?? const Uuid().v4(),
-      name: _nameController.text.trim().isEmpty
-          ? '이름없음'
-          : _nameController.text.trim(),
-      birthDate: DateTime(year, month, day, hour, minute),
+      name: _nameController.text.trim().isEmpty ? '이름없음' : _nameController.text.trim(),
+      birthDate: birthDate,
       isLunar: _isLunar,
       isLeapMonth: _isLeapMonth,
       isUnknownTime: _isUnknownTime,
       gender: _gender,
       memo: '',
+      lunarYear: _isLunar ? year : null,
+      lunarMonth: _isLunar ? month : null,
+      lunarDay: _isLunar ? day : null,
     );
 
-    // ✅ 로딩 다이얼로그 표시
+    // 로딩 다이얼로그 표시
+    if(!mounted)return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -136,24 +179,24 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     );
 
     try {
-      await ManseLoader.load(); // 🔹 만세력 미리 로드
+      await ManseLoader.load(); // 🔹 만세력 데이터 캐시 로드
     } finally {
       if (mounted) Navigator.pop(context);
     }
 
     final profilesNotifier = ref.read(profilesProvider.notifier);
 
-    // ✅ 1. 새 프로필 추가 or 기존 프로필 수정
+    // 1. 추가 또는 수정
     if (_editingProfile == null) {
       await profilesNotifier.addProfile(newProfile);
     } else {
       await profilesNotifier.updateProfile(newProfile);
     }
 
-    // ✅ 2. 선택된 프로필로 지정
+    // 2. 선택 프로필로 지정
     await ref.read(selectedProfileProvider.notifier).select(newProfile);
 
-    // ✅ 3. 바로 사주 보기 화면으로 이동
+    // 3. 사주 보기로 이동
     if (!mounted) return;
     Navigator.pushReplacement(
       context,
@@ -162,6 +205,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
       ),
     );
   }
+
 
   // ----------------------------
   @override

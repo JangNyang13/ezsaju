@@ -5,6 +5,7 @@ class Daewoon {
   final String stem;
   final String branch;
   final int startAge;
+  final String direction;
 
   Daewoon({
     required this.index,
@@ -13,5 +14,6 @@ class Daewoon {
     required this.stem,
     required this.branch,
     required this.startAge,
+    required this.direction,
   });
 }

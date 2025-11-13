@@ -16,7 +16,8 @@ import '../../models/saju_data.dart';
 ///
 class SinsalEngine {
   static Map<String, dynamic> interpret(SajuData saju) {
-    final result = <String, List<String>>{
+
+    final result = <String, dynamic>{
       '길신': [],
       '흉신': [],
     };
@@ -146,27 +147,11 @@ class SinsalEngine {
         'mode': 'equal',
       },
       {
-        'name': '역마',
-        'type': '길신',
-        'basis': [saju.yearBranch, saju.dayBranch],
-        'table': _yeokMa,
-        'compare': branchLabels,
-        'mode': 'contains',
-      },
-      {
-        'name': '천사',
+        'name': '천사성',
         'type': '길신',
         'basis': monthBranch,
         'table': _cheonSa,
         'compare': {'일주': dayStem + dayBranch},
-        'mode': 'equal',
-      },
-      {
-        'name': '화개',
-        'type': '길신',
-        'basis': yearBranch,
-        'table': _hwaGae,
-        'compare': branchLabels,
         'mode': 'equal',
       },
       {
@@ -300,9 +285,26 @@ class SinsalEngine {
 
         result[type]!.add('$name(${juLabels.join(', ')})');
       }
-
     }
+    // ------------------------------------------------------------
+    // 🔹 추가: 역마 재계산 (지지 간 교차 비교 방식)
+    // 역마
+    final yeokma = _checkBranchRelation(
+      name: '역마',
+      table: _yeokMa,
+      branches: [yearBranch, monthBranch, dayBranch, hourBranch],
+      labels: ['년지', '월지', '일지', '시지'],
+    );
+    result['길신']!.addAll(yeokma.map((e) => e.replaceAll('지', '주')));
 
+    // 🔹 화개
+    final hwagae = _checkBranchRelation(
+      name: '화개',
+      table: _hwaGae,
+      branches: [yearBranch, monthBranch, dayBranch, hourBranch],
+      labels: ['년지', '월지', '일지', '시지'],
+    );
+    result['길신']!.addAll(hwagae.map((e) => e.replaceAll('지', '주')));
 
     // ------------------------------------------------------------
     // 별도 규칙 (삼기귀인, 공망, 절로공망)
@@ -311,9 +313,18 @@ class SinsalEngine {
     // 삼기귀인 (順行/逆行 모두 인정)
     if (_checkSamGiGuiIn(saju)) {result['길신']!.add('삼기귀인');}
 
-    // 공망 (일주 기준)
-    final gongMang = _getGongMang(dayStem, dayBranch);
-    if (gongMang.contains(dayBranch)) result['흉신']!.add('공망');
+    // 공망 (일주와 년주)
+    final yearGongMang = _getGongMang(yearStem, yearBranch);
+    final dayGongMang = _getGongMang(dayStem, dayBranch);
+    // 년주&일주 공망
+    if (yearGongMang.contains(yearBranch)) {result['흉신']!.add('년공망');}
+    if (dayGongMang.contains(dayBranch)) {result['흉신']!.add('일공망');}
+    result['공망정보'] = { //SajuViewerScreen에 UI표시
+      '년공망': yearGongMang,
+      '일공망': dayGongMang,
+    };
+
+
 
     // 절로공망 (4지 중 포함 시)
     final jeol = _jeolRoGongMang[dayStem];
@@ -328,8 +339,8 @@ class SinsalEngine {
     if (_checkHyeopRok(dayStem, _hyeopRok, branchLabels)) {
       result['길신']!.add('협록');
     }
-
     return result;
+
   }
 
   // ------------------------------------------------------------
@@ -381,7 +392,6 @@ class SinsalEngine {
       branches[(endBranchIndex + 1) % 12],
       branches[(endBranchIndex + 2) % 12],
     ];
-
   }
 
   //협록체크
@@ -399,6 +409,44 @@ class SinsalEngine {
     return branchLabels.values
         .cast<String>()
         .any((b) => lefts.contains(b) || rights.contains(b));
+  }
+
+  /// 🔹 지지 간 관계형 신살(역마, 화개, 육형 등)을 공통 처리
+  static List<String> _checkBranchRelation({
+    required String name,
+    required Map<String, List<String>> table,
+    required List<String> branches, // [년, 월, 일, 시]
+    required List<String> labels,   // ['년지', '월지', '일지', '시지']
+  }) {
+    final result = <String>[];
+    final matchedJu = <String>{};
+
+    for (int i = 0; i < branches.length; i++) {
+      for (int j = i + 1; j < branches.length; j++) {
+        final a = branches[i];
+        final b = branches[j];
+
+        final forward = table[a]?.contains(b) ?? false;
+        final backward = table[b]?.contains(a) ?? false;
+
+        if (forward || backward) {
+          // ↔ 관계를 찾았을 때, 두 주 모두 체크
+          final ju1 = labels[i].replaceAll('지', '주');
+          final ju2 = labels[j].replaceAll('지', '주');
+
+          // 이미 포함된 주는 중복 추가 방지
+          if (!matchedJu.contains(ju1)) {
+            result.add('$name($ju1)');
+            matchedJu.add(ju1);
+          }
+          if (!matchedJu.contains(ju2)) {
+            result.add('$name($ju2)');
+            matchedJu.add(ju2);
+          }
+        }
+      }
+    }
+    return result;
   }
 
 
@@ -480,10 +528,10 @@ class SinsalEngine {
   };
 
   static const _hwaGae = {
-    '인': '술', '오': '술', '술': '술',
-    '사': '축', '유': '축', '축': '축',
-    '신': '진', '자': '진', '진': '진',
-    '해': '미', '묘': '미', '미': '미',
+    '인': ['술'], '오': ['술'], '술': ['술'],
+    '사': ['축'], '유': ['축'], '축': ['축'],
+    '신': ['진'], '자': ['진'], '진': ['진'],
+    '해': ['미'], '묘': ['미'], '미': ['미'],
   };
 
   static const _hakDang = {

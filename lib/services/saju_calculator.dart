@@ -5,7 +5,7 @@ class SajuCalculator {
   final List<CalendarDay> manse;
   SajuCalculator(this.manse);
 
-  SajuData calculate(DateTime dateTime) {
+  SajuData calculate(DateTime dateTime, {bool isLunar = false, bool isLeapMonth = false}) {
     // 🔸 23:30 이후면 다음날 데이터를 불러옴
     final isNextDay = (dateTime.hour == 23 && dateTime.minute >= 30);
     final targetDate = isNextDay

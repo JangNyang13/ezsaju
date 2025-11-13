@@ -13,7 +13,6 @@ class SajuColumn extends StatelessWidget {
   final Map unse;
   final Map<String, List<String>> sinsal;
   final SajuData saju;
-  final double size;
 
   const SajuColumn({
     super.key,
@@ -24,14 +23,23 @@ class SajuColumn extends StatelessWidget {
     required this.unse,
     required this.sinsal,
     required this.saju,
-    this.size = 72,
   });
 
   @override
   Widget build(BuildContext context) {
-    // 시스템 폰트 배율 무시
+    // 화면 폭 기준 반응형 크기 계산
+    final screenWidth = MediaQuery.of(context).size.width;
+    const outerPadding = 24.0; // 양 끝 여백
+    const gap = 12.0; // 칸 간격
+    const columns = 4;
+
+    final double boxSize =
+        (screenWidth - (outerPadding * 2) - (gap * (columns - 1))) / columns;
+
+    // 시스템 폰트 배율 고정
     final media = MediaQuery.of(context);
-    final textScaler = media.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.0);
+    final textScaler =
+    media.textScaler.clamp(minScaleFactor: 1.0, maxScaleFactor: 1.0);
 
     final stemTenGod = tenGods['${label.substring(0, 1)}간'];
     final branchTenGod = tenGods['${label.substring(0, 1)}지'];
@@ -49,7 +57,7 @@ class SajuColumn extends StatelessWidget {
     final ganjiKor = '${getHangulName(stem)}${getHangulName(branch)}';
 
     return MediaQuery(
-      data: media.copyWith(textScaler: textScaler), // 폰트 크기 고정
+      data: media.copyWith(textScaler: textScaler),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -79,41 +87,42 @@ class SajuColumn extends StatelessWidget {
             Text(
               stemTenGod,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
+              style:
+              const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
             ),
 
           const SizedBox(height: 4),
 
-          // 천간
+          // 천간 — 반응형 GapjaBox
           GapjaBox(
             text: stem,
             color: (stem == '-' || stem.isEmpty)
                 ? AppColors.background
                 : AppColors.fromGanji(stem),
-            size: size,
+            size: boxSize,
           ),
 
           const SizedBox(height: 4),
 
-          // 지지
+          // 지지 — 반응형 GapjaBox
           GapjaBox(
             text: branch,
             color: (branch == '-' || branch.isEmpty)
                 ? AppColors.background
                 : AppColors.fromGanji(branch),
-            size: size,
+            size: boxSize,
           ),
 
           if (branchTenGod != null)
             Text(
               branchTenGod,
-              style: const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
+              style:
+              const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
               textAlign: TextAlign.center,
             ),
 
           const SizedBox(height: 4),
 
-          // 지장간 + 십성
           if (hiddenList.isNotEmpty)
             Column(
               children: [
@@ -141,8 +150,9 @@ class SajuColumn extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: hiddenList.map((h) {
-                      final sameYinYang = ShibsungModule.isYang(saju.dayStem) ==
-                          ShibsungModule.isYang(h);
+                      final sameYinYang =
+                          ShibsungModule.isYang(saju.dayStem) ==
+                              ShibsungModule.isYang(h);
                       final tenGod = ShibsungModule.getTenGod(
                         saju.dayStem,
                         h,
@@ -180,7 +190,6 @@ class SajuColumn extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
 
-          // 신살
           if ((sinsal['good']?.isNotEmpty ?? false) ||
               (sinsal['bad']?.isNotEmpty ?? false))
             Padding(
@@ -193,9 +202,9 @@ class SajuColumn extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         color: Colors.teal,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
-                        height: 1.1,
+                        height: 1.3,
                       ),
                     ),
                   ),
@@ -207,7 +216,7 @@ class SajuColumn extends StatelessWidget {
                         color: Colors.redAccent,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        height: 1.1,
+                        height: 1.3,
                       ),
                     ),
                   ),

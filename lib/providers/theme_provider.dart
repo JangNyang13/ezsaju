@@ -83,7 +83,7 @@ class ProfilesNotifier extends AsyncNotifier<List<Profile>> {
     await _saveProfiles(updated);
   }
 
-  /// ✅ deleteProfile
+  /// deleteProfile
   Future<void> deleteProfile(String id) async {
     final current = [...(state.value ?? <Profile>[])];
     final filtered = current.where((p) => p.id != id).toList();

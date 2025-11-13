@@ -17,7 +17,7 @@ class CalendarDay {
   // 🈯 윤달 여부
   final bool isLeapMonth;
 
-  // 🚫 공휴일 (0: 평일, 1: 휴일)
+  //공휴일 (0: 평일, 1: 휴일)
   final bool isHoliday;
 
   const CalendarDay({
@@ -35,6 +35,19 @@ class CalendarDay {
     this.isLeapMonth = false,
     this.isHoliday = false,
   });
+
+  bool get isEmpty => solarYear == 0;
+  factory CalendarDay.empty() => CalendarDay(
+    solarYear: 0,
+    solarMonth: 0,
+    solarDay: 0,
+    lunarYear: 0,
+    lunarMonth: 0,
+    lunarDay: 0,
+    hyGanJee: '',
+    hmGanJee: '',
+    hdGanJee: '',
+  );
 
   factory CalendarDay.fromJson(Map<String, dynamic> json) {
     return CalendarDay(

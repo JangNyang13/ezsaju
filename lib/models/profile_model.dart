@@ -10,6 +10,10 @@ class Profile {
   final String gender; // '남' or '여'
   final String memo;
 
+  final int? lunarYear;
+  final int? lunarMonth;
+  final int? lunarDay;
+
   Profile({
     required this.id,
     required this.name,
@@ -19,6 +23,9 @@ class Profile {
     this.isUnknownTime = false,
     this.gender = '남',
     this.memo = '',
+    this.lunarYear,
+    this.lunarMonth,
+    this.lunarDay,
   });
 
   Map<String, dynamic> toJson() => {
@@ -30,6 +37,9 @@ class Profile {
     'isUnknownTime': isUnknownTime,
     'gender': gender,
     'memo': memo,
+    'lunarYear': lunarYear,
+    'lunarMonth': lunarMonth,
+    'lunarDay': lunarDay,
   };
 
   factory Profile.fromJson(Map<String, dynamic> json) => Profile(
@@ -41,6 +51,9 @@ class Profile {
     isUnknownTime: json['isUnknownTime'] ?? false,
     gender: json['gender'] ?? '남',
     memo: json['memo'] ?? '',
+    lunarYear: json['lunarYear'],
+    lunarMonth: json['lunarMonth'],
+    lunarDay: json['lunarDay'],
   );
 
 }

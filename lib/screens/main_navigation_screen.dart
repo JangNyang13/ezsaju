@@ -24,10 +24,10 @@ class MainNavigationScreenState extends State<MainNavigationScreen>
   late Animation<double> _posAnim;
 
   final _pages = const [
-    DailyCalendarScreen(), // 1️⃣ 만세력
-    DailyInfoScreen(),     // 2️⃣ 오늘의 정보
-    SajuEntryScreen(),    // 3️⃣ 사주조회
-    SettingsScreen(),      // 4️⃣ 설정
+    DailyCalendarScreen(), // 1️⃣ 만세력 (양력, 음력, 정기 일진정보)
+    DailyInfoScreen(),     // 2️⃣ 오늘의 정보(절기, 오늘 운세는 추가예정)
+    SajuEntryScreen(),    // 3️⃣ 프로필 정장 및 조회로 이동 -> SajuViewerScreen 사주조회화면
+    SettingsScreen(),      // 4️⃣ 설정 (알림수신추가08시, 20시에 푸쉬알림)
   ];
 
   @override

@@ -1,7 +1,7 @@
-// lib/modules/daewoon_module/daewoon_calculator.dart
 import '../../../models/calendar_day.dart';
 import '../../../models/stem_branch.dart';
 import '../../../services/term_extractor.dart';
+import '../../../services/manse_loader.dart'; // 추가
 import 'daewoon_model.dart';
 
 class DaewoonCalculator {
@@ -11,19 +11,42 @@ class DaewoonCalculator {
     required String monthBranch,
     required DateTime birthDate,
     required bool isMale,
+    bool isLunar = false, // ✅ 프로필이 음력인지 여부 추가
+    bool isLeapMonth = false, // ✅ 윤달 여부 추가
   }) async {
     // 12절입만 로드
     final majorTerms = await TermExtractor.extractMajorTerms();
 
-    // 순행/역행 판별
+    // ------------------------------------------------------------
+    // 🔹 (1) 음력 입력 시 양력으로 변환
+    // ------------------------------------------------------------
+    DateTime solarBirth = birthDate;
+    if (isLunar) {
+      final converted = await ManseLoader.lunarToSolar(
+        lunarYear: birthDate.year,
+        lunarMonth: birthDate.month,
+        lunarDay: birthDate.day,
+        isLeapMonth: isLeapMonth,
+      );
+      if (converted != null) solarBirth = converted;
+    }
+
+    // ------------------------------------------------------------
+    // 🔹 (2) 순행/역행 판별
+    // ------------------------------------------------------------
     final bool isForward = _isForward(yearStem, isMale);
+    final String direction = isForward ? '순행' : '역행';
 
-    // 생일 기준 이전·다음 절입일 찾기
-    final terms = _findPrevNextTerms(birthDate, majorTerms);
+    // ------------------------------------------------------------
+    // 🔹 (3) 절입 기준 찾기
+    // ------------------------------------------------------------
+    final terms = _findPrevNextTerms(solarBirth, majorTerms);
 
-    // 대운수(시작연령) 계산
+    // ------------------------------------------------------------
+    // 🔹 (4) 대운 시작 시점(대운수) 계산
+    // ------------------------------------------------------------
     final offsetResult = _getStartOffset(
-      birthDate,
+      solarBirth,
       terms['prev']!,
       terms['next']!,
       isForward,
@@ -31,18 +54,19 @@ class DaewoonCalculator {
 
     final int startAge = offsetResult['years']!;
     final Duration offset = offsetResult['offset']!;
-    final DateTime firstDaewoonStart = birthDate.add(offset);
+    final DateTime firstDaewoonStart = solarBirth.add(offset);
 
+    // ------------------------------------------------------------
+    // 🔹 (5) 대운 간지 순환 계산
+    // ------------------------------------------------------------
     final List<Daewoon> result = [];
 
-    // 첫 대운은 월주 다음 간지부터 시작
     var stem = monthStem;
     var branch = monthBranch;
     final first = _nextGanji(stem, branch, isForward);
     stem = first['stem']!;
     branch = first['branch']!;
 
-    // 10주기 대운 생성
     for (int i = 0; i < 10; i++) {
       result.add(Daewoon(
         index: i + 1,
@@ -50,7 +74,8 @@ class DaewoonCalculator {
         endYear: firstDaewoonStart.year + (i + 1) * 10 - 1,
         stem: stem,
         branch: branch,
-        startAge: startAge + (i * 10), // 실제 시작나이 반영
+        startAge: startAge + (i * 10),
+        direction: direction,
       ));
 
       final next = _nextGanji(stem, branch, isForward);
@@ -80,7 +105,6 @@ class DaewoonCalculator {
       }
     }
 
-    // 🔧 연도 경계 안전 처리
     prev ??= terms.last;
     next ??= terms.first;
 
@@ -90,7 +114,6 @@ class DaewoonCalculator {
     };
   }
 
-
   /// ▪️ 순행 / 역행 판별
   static bool _isForward(String yearStem, bool isMale) {
     const yangStems = ['甲', '丙', '戊', '庚', '壬'];
@@ -98,8 +121,7 @@ class DaewoonCalculator {
     return (isYang && isMale) || (!isYang && !isMale);
   }
 
-  /// ▪️ 대운 시작 시점 계산식 (절입 기준, 반올림 적용)
-  // ▪️ 대운 시작 시점 계산식 (정확한 절입 기준)
+  /// ▪️ 대운 시작 시점 계산식 (절입 기준)
   static Map<String, dynamic> _getStartOffset(
       DateTime birthDate,
       DateTime prevTerm,
@@ -108,12 +130,13 @@ class DaewoonCalculator {
       ) {
     final daysDiff = (isForward
         ? nextTerm.difference(birthDate).inDays
-        : birthDate.difference(prevTerm).inDays) +1;//태어난 날도 1일.
+        : birthDate.difference(prevTerm).inDays) +
+        1; // 태어난 날 포함
 
-    // 대운수 = (절입 간 일수 ÷ 3), 반올림
+    // 대운수 = 절입 간 일수 ÷ 3 (반올림)
     final years = (daysDiff / 3.0).round();
 
-    // 실제 일수 기반 offset (윤년 포함 보정)
+    // 실제 offset 일수 (윤년 보정)
     final offsetDays = (years * 365.25).round();
 
     return {
@@ -122,8 +145,7 @@ class DaewoonCalculator {
     };
   }
 
-
-  /// ▪️ 간지 순환 (stem_branch.dart 사용)
+  /// ▪️ 간지 순환
   static Map<String, String> _nextGanji(
       String stem,
       String branch,
@@ -136,8 +158,8 @@ class DaewoonCalculator {
       sIdx = (sIdx + 1) % heavenlyStems.length;
       bIdx = (bIdx + 1) % earthlyBranches.length;
     } else {
-      sIdx = (sIdx - 1) < 0 ? heavenlyStems.length - 1 : sIdx - 1;
-      bIdx = (bIdx - 1) < 0 ? earthlyBranches.length - 1 : bIdx - 1;
+      sIdx = (sIdx - 1 + heavenlyStems.length) % heavenlyStems.length;
+      bIdx = (bIdx - 1 + earthlyBranches.length) % earthlyBranches.length;
     }
 
     return {

@@ -12,7 +12,7 @@ class SelectedProfileNotifier extends StateNotifier<Profile?> {
   final Ref ref;
   static const _key = 'selected_profile_id';
 
-  /// ✅ 앱 실행 시 저장된 프로필 불러오기
+  /// 앱 실행 시 저장된 프로필 불러오기
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
     final savedId = prefs.getString(_key);
@@ -26,14 +26,14 @@ class SelectedProfileNotifier extends StateNotifier<Profile?> {
     }
   }
 
-  /// ✅ 프로필 선택 시 SharedPreferences에 저장
+  /// 프로필 선택 시 SharedPreferences에 저장
   Future<void> select(Profile profile) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, profile.id);
     state = profile;
   }
 
-  /// ✅ 선택 해제
+  /// 선택 해제
   Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);
@@ -41,7 +41,7 @@ class SelectedProfileNotifier extends StateNotifier<Profile?> {
   }
 }
 
-/// ✅ 전역 provider
+/// 전역 provider
 final selectedProfileProvider =
 StateNotifierProvider<SelectedProfileNotifier, Profile?>((ref) {
   return SelectedProfileNotifier(ref);

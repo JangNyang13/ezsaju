@@ -18,7 +18,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
   String _searchQuery = '';
 
   // ----------------------------
-  // ✅ 프로필 추가
+  // 프로필 추가
   void _addProfile() async {
     final newProfile = await Navigator.push<Profile?>(
       context,
@@ -31,7 +31,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
     }
   }
 
-// ✅ 프로필 수정
+// 프로필 수정
   void _editProfile(Profile profile) async {
     final edited = await Navigator.push<Profile?>(
       context,
@@ -47,7 +47,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
     }
   }
 
-// ✅ 프로필 삭제
+// 프로필 삭제
   void _deleteProfile(Profile profile) {
     showDialog(
       context: context,
@@ -141,7 +141,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
             ),
             const SizedBox(height: 6),
 
-            // ✅ 목록
+            // 목록
             Expanded(
               child: profilesAsync.when(
                 data: (_) => ProfileListView(
@@ -256,13 +256,23 @@ class ProfileListView extends StatelessWidget {
             ),
             margin: const EdgeInsets.symmetric(vertical: 6),
             child: ListTile(
+              onTap: () => onOpen(p), // 🔹 타일 전체 클릭 가능
               leading: CircleAvatar(
                 backgroundColor: AppColors.primary,
                 child: Text(p.name.characters.first),
               ),
               title: Text(p.name),
               subtitle: Text(
-                  '${p.birthDate.year}.${p.birthDate.month}.${p.birthDate.day} (${p.gender})'),
+                p.isLunar
+                    ? '(음)${p.lunarYear?.toString().padLeft(4, '0') ?? p.birthDate.year.toString().padLeft(4, '0')}.'
+                    '${p.lunarMonth?.toString().padLeft(2, '0') ?? p.birthDate.month.toString().padLeft(2, '0')}.'
+                    '${p.lunarDay?.toString().padLeft(2, '0') ?? p.birthDate.day.toString().padLeft(2, '0')}'
+                    : '(양)${p.birthDate.year.toString().padLeft(4, '0')}.'
+                    '${p.birthDate.month.toString().padLeft(2, '0')}.'
+                    '${p.birthDate.day.toString().padLeft(2, '0')}',
+                style: const TextStyle(fontSize: 14),
+              ),
+
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -274,13 +284,10 @@ class ProfileListView extends StatelessWidget {
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () => onDelete(p),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios_rounded),
-                    onPressed: () => onOpen(p),
-                  ),
                 ],
               ),
             ),
+
           );
         },
       ),

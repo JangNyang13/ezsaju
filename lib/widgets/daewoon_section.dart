@@ -51,7 +51,6 @@ class _DaewoonSectionState extends State<DaewoonSection> {
       _manse = manseData;
       _daewoon = list;
       _loading = false;
-      // 초기값: 현재 대운
       final now = DateTime.now().year;
       _selectedDaewoonIndex =
           list.indexWhere((d) => now >= d.startYear && now <= d.endYear);
@@ -60,7 +59,7 @@ class _DaewoonSectionState extends State<DaewoonSection> {
     });
   }
 
-  /// 🔹 특정 대운의 10년 세운 목록 생성
+  /// 🔹 세운 목록
   List<Map<String, dynamic>> _getSaewoonList(Daewoon daewoon) {
     final years = List.generate(
       daewoon.endYear - daewoon.startYear + 1,
@@ -81,7 +80,7 @@ class _DaewoonSectionState extends State<DaewoonSection> {
     }).toList();
   }
 
-  /// 🔹 특정 연도의 월운 목록 생성
+  /// 🔹 월운 목록
   List<Map<String, dynamic>> _getMonthList(int year) {
     final monthSet = <String>{};
     final monthList = _manse!
@@ -89,15 +88,13 @@ class _DaewoonSectionState extends State<DaewoonSection> {
         .where((d) => monthSet.add(d.hmGanJee))
         .toList();
 
-    return monthList
-        .map((d) {
+    return monthList.map((d) {
       final month = d.solarMonth;
       final ganji = d.hmGanJee;
       final gan = ganji.isNotEmpty ? ganji.substring(0, 1) : '?';
       final ji = ganji.length > 1 ? ganji.substring(1, 2) : '?';
       return {'month': month, 'stem': gan, 'branch': ji};
-    })
-        .toList();
+    }).toList();
   }
 
   @override
@@ -109,16 +106,21 @@ class _DaewoonSectionState extends State<DaewoonSection> {
     final saewoonList = _getSaewoonList(selectedDaewoon);
     final monthList = _getMonthList(_selectedYear);
 
+    // 🔹 공통 비율 기반 크기 계산
+    final screenWidth = MediaQuery.of(context).size.width;
+    const outerPadding = 24.0;
+    const gap = 12.0;
+    const columns = 6; // 한 줄에 보여줄 칸 수
+    final double boxSize =
+        (screenWidth - (outerPadding * 2) - (gap * (columns - 1))) / columns;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // ==========================
-        // ① 대운 섹션
-        // ==========================
-        const Text(
-          '대운 (10년 주기)',
-          textAlign: TextAlign.center,
-          style: TextStyle(
+        // ① 대운
+        Text(
+          '대운(10년 주기) | ${selectedDaewoon.direction} ${selectedDaewoon.startAge % 10}',
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
@@ -136,16 +138,15 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                 onTap: () {
                   setState(() {
                     _selectedDaewoonIndex = _daewoon!.indexOf(d);
-                    _selectedYear = d.startYear; // 클릭 시 세운 초기화
+                    _selectedYear = d.startYear;
                   });
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 50,
+                        width: boxSize,
                         height: 25,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
@@ -157,7 +158,6 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                         child: Text(
                           '${d.startAge}',
                           style: TextStyle(
-                            fontFamily: 'NotoSansKR',
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: isSelected
@@ -170,14 +170,14 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                       GapjaBox(
                         text: d.stem,
                         color: AppColors.fromGanji(d.stem),
-                        size: 50,
+                        size: boxSize,
                         showLabel: false,
                       ),
                       const SizedBox(height: 4),
                       GapjaBox(
                         text: d.branch,
                         color: AppColors.fromGanji(d.branch),
-                        size: 50,
+                        size: boxSize,
                         showLabel: false,
                       ),
                     ],
@@ -188,10 +188,9 @@ class _DaewoonSectionState extends State<DaewoonSection> {
           ),
         ),
 
-        // ==========================
-        // ② 세운 섹션
-        // ==========================
         const SizedBox(height: 10),
+
+        // ② 세운
         Text(
           '세운 (${selectedDaewoon.startYear} ~ ${selectedDaewoon.endYear})년도',
           style: const TextStyle(
@@ -213,10 +212,9 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 50,
+                        width: boxSize,
                         height: 25,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
@@ -240,14 +238,14 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                       GapjaBox(
                         text: s['stem'] as String,
                         color: AppColors.fromGanji(s['stem'] as String),
-                        size: 50,
+                        size: boxSize,
                         showLabel: false,
                       ),
                       const SizedBox(height: 4),
                       GapjaBox(
                         text: s['branch'] as String,
                         color: AppColors.fromGanji(s['branch'] as String),
-                        size: 50,
+                        size: boxSize,
                         showLabel: false,
                       ),
                     ],
@@ -258,10 +256,9 @@ class _DaewoonSectionState extends State<DaewoonSection> {
           ),
         ),
 
-        // ==========================
-        // ③ 월운 섹션
-        // ==========================
         const SizedBox(height: 10),
+
+        // ③ 월운
         Text(
           '월운 ($_selectedYear년)',
           style: const TextStyle(
@@ -283,10 +280,9 @@ class _DaewoonSectionState extends State<DaewoonSection> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 6),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 50,
+                      width: boxSize,
                       height: 25,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -310,14 +306,14 @@ class _DaewoonSectionState extends State<DaewoonSection> {
                     GapjaBox(
                       text: m['stem'] as String,
                       color: AppColors.fromGanji(m['stem'] as String),
-                      size: 50,
+                      size: boxSize,
                       showLabel: false,
                     ),
                     const SizedBox(height: 4),
                     GapjaBox(
                       text: m['branch'] as String,
                       color: AppColors.fromGanji(m['branch'] as String),
-                      size: 50,
+                      size: boxSize,
                       showLabel: false,
                     ),
                   ],

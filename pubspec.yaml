@@ -5,8 +5,8 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-# v2버전 1.1.1 +10
-version: 1.1.1+10
+# v2버전 엄마의 사주조회 피드백1.1.2 +11
+version: 1.1.2+11
 
 environment:
   sdk: ^3.8.1
