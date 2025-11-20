@@ -18,15 +18,22 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
 
   @override
   Widget build(BuildContext context) {
+    // 📌 화면 스케일러
+    final sw = MediaQuery.of(context).size.width;
+    final scale = sw / 390;
+    final tScale = MediaQuery.of(context).textScaler.scale(1.0).clamp(0.8, 1.2);
+
+
+
     final days = widget.manse
         .where((d) =>
     d.solarYear == _focusedMonth.year &&
         d.solarMonth == _focusedMonth.month)
         .toList();
 
-    // 이전·다음 달
     final prevMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1);
     final nextMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1);
+
     final prevDays = widget.manse
         .where((d) => d.solarYear == prevMonth.year && d.solarMonth == prevMonth.month)
         .toList();
@@ -34,12 +41,12 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
         .where((d) => d.solarYear == nextMonth.year && d.solarMonth == nextMonth.month)
         .toList();
 
-    // 월요일 시작으로 조정
-    final firstWeekday = (DateTime(_focusedMonth.year, _focusedMonth.month, 1).weekday + 6) % 7;
+    final firstWeekday =
+        (DateTime(_focusedMonth.year, _focusedMonth.month, 1).weekday + 6) % 7;
 
     List<_CalendarCell> displayDays = [];
 
-    // 앞쪽 채우기 (이전달)
+    // 앞쪽 (이전 달)
     for (int i = 0; i < firstWeekday; i++) {
       final prev = prevDays[prevDays.length - firstWeekday + i];
       displayDays.add(_CalendarCell(prev, true));
@@ -50,7 +57,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
       displayDays.add(_CalendarCell(d, false));
     }
 
-    // 뒤쪽 채우기 (다음달)
+    // 뒤쪽 (다음 달)
     int nextIndex = 0;
     while (displayDays.length % 7 != 0) {
       displayDays.add(_CalendarCell(nextDays[nextIndex], true));
@@ -60,21 +67,19 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
     // 마지막 줄이 전부 회색이면 제거
     while (displayDays.length >= 7) {
       final lastRow = displayDays.sublist(displayDays.length - 7);
-      final allDimmed = lastRow.every((e) => e.isDimmed);
-      if (allDimmed) {
+      if (lastRow.every((e) => e.isDimmed)) {
         displayDays.removeRange(displayDays.length - 7, displayDays.length);
       } else {
         break;
       }
     }
 
-    // 행 계산
     final weekCount = (displayDays.length / 7).ceil();
 
     return Column(
       children: [
-        _buildMonthHeader(),
-        _buildWeekHeader(),
+        _buildMonthHeader(scale, tScale),
+        _buildWeekHeader(scale, tScale),
         Expanded(
           child: Table(
             children: List.generate(weekCount, (week) {
@@ -89,49 +94,52 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
 
                   final ganElement = heavenlyStems
                       .firstWhere((e) => e.name == gan,
-                      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'))
+                      orElse: () => const StemBranch(
+                          name: '', element: '토', yinYang: '양'))
                       .element;
-
                   final jiElement = earthlyBranches
                       .firstWhere((e) => e.name == ji,
-                      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'))
+                      orElse: () => const StemBranch(
+                          name: '', element: '토', yinYang: '양'))
                       .element;
 
-                  // 오늘 날짜 확인
-                  final isToday = day.solarYear == DateTime.now().year &&
-                      day.solarMonth == DateTime.now().month &&
-                      day.solarDay == DateTime.now().day;
+                  final isToday =
+                      day.solarYear == DateTime.now().year &&
+                          day.solarMonth == DateTime.now().month &&
+                          day.solarDay == DateTime.now().day;
 
                   return GestureDetector(
-                    onTap: () => _showDayInfo(context, day),
+                    onTap: () => _showDayInfo(context, day, scale, tScale),
                     child: Padding(
-                      padding: const EdgeInsets.all(4),
+                      padding: EdgeInsets.all(4 * scale),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isToday
-                              ? AppColors.card
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(6),
+                          color: isToday ? AppColors.secondary : Colors.transparent,
+                          borderRadius: BorderRadius.circular(6 * scale),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        padding: EdgeInsets.symmetric(vertical: 2 * scale),
                         child: Column(
                           children: [
-                            Text( // 양력
+                            // 양력 날짜
+                            Text(
                               '${day.solarDay}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontSize: 14 * scale * tScale,
                                 color: dim
                                     ? Colors.grey.withValues(alpha: 0.4)
                                     : Colors.black,
                               ),
                             ),
-                            Text.rich( // 일진 (오행색 적용)
+
+                            // 간지
+                            Text.rich(
                               TextSpan(
                                 children: [
                                   TextSpan(
                                     text: gan,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 15 * scale,
                                       fontWeight: FontWeight.w900,
                                       color: AppColors.elementColor(ganElement),
                                     ),
@@ -139,7 +147,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                                   TextSpan(
                                     text: ji,
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 15 * scale,
                                       fontWeight: FontWeight.w900,
                                       color: AppColors.elementColor(jiElement),
                                     ),
@@ -147,20 +155,24 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                                 ],
                               ),
                             ),
-                            Text( // 음력
+
+                            // 음력
+                            Text(
                               '${day.isLeapMonth ? "윤" : "음"}${day.lunarMonth}.${day.lunarDay}',
                               style: TextStyle(
-                                fontSize: 11,
+                                fontSize: 11 * scale,
                                 color: day.isLeapMonth
                                     ? AppColors.fire.withValues(alpha: 0.6)
-                                    : Colors.grey.withValues(alpha: 1.0),
+                                    : AppColors.primary.withValues(alpha: 1.0),
                               ),
                             ),
+
+                            // 절기
                             if (day.termName != null)
-                              Text( // 절기
+                              Text(
                                 day.termName!,
-                                style: const TextStyle(
-                                  fontSize: 11,
+                                style: TextStyle(
+                                  fontSize: 11 * scale,
                                   color: AppColors.fire,
                                 ),
                               ),
@@ -169,7 +181,6 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       ),
                     ),
                   );
-
                 }),
               );
             }),
@@ -179,17 +190,18 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
     );
   }
 
-  // 📅 상단 월 선택 + 다이얼
-  Widget _buildMonthHeader() {
+  // 📅 월 선택 헤더
+  Widget _buildMonthHeader(double scale, double tScale) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12 * scale),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.chevron_left),
+            icon: Icon(Icons.chevron_left, size: 24 * scale),
             onPressed: () => setState(() {
-              _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
+              _focusedMonth =
+                  DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
             }),
           ),
           GestureDetector(
@@ -202,27 +214,26 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                 ),
                 builder: (context) {
                   DateTime tempDate = _focusedMonth;
-
                   return SizedBox(
-                    height: 300,
+                    height: 300 * scale,
                     child: Column(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                        Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12 * scale),
                           child: Text(
                             '이동할 날짜를 선택하세요',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 16 * scale,
                             ),
                           ),
                         ),
                         Expanded(
                           child: CupertinoTheme(
-                            data: const CupertinoThemeData(
+                            data: CupertinoThemeData(
                               textTheme: CupertinoTextThemeData(
                                 dateTimePickerTextStyle: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 20 * scale,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.black,
                                 ),
@@ -233,20 +244,21 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                               initialDateTime: _focusedMonth,
                               minimumDate: DateTime(1900, 1, 1),
                               maximumDate: DateTime(2100, 12, 31),
-                              onDateTimeChanged: (DateTime newDate) {
+                              onDateTimeChanged: (newDate) {
                                 tempDate = newDate;
                               },
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: EdgeInsets.symmetric(vertical: 8 * scale),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text('취소'),
+                                child: Text('취소',
+                                    style: TextStyle(fontSize: 14 * scale)),
                               ),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -260,7 +272,8 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                                   });
                                   Navigator.pop(context);
                                 },
-                                child: const Text('확인'),
+                                child: Text('확인',
+                                    style: TextStyle(fontSize: 14 * scale)),
                               ),
                             ],
                           ),
@@ -275,21 +288,22 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
               children: [
                 Text(
                   '${_focusedMonth.year}년 ${_focusedMonth.month}월',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 18 * scale * tScale,
                     decoration: TextDecoration.underline,
                   ),
                 ),
-                const SizedBox(width: 4),
-                const Icon(Icons.arrow_drop_down, size: 24),
+                SizedBox(width: 4 * scale),
+                Icon(Icons.arrow_drop_down, size: 24 * scale),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.chevron_right),
+            icon: Icon(Icons.chevron_right, size: 24 * scale),
             onPressed: () => setState(() {
-              _focusedMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
+              _focusedMonth =
+                  DateTime(_focusedMonth.year, _focusedMonth.month + 1, 1);
             }),
           ),
         ],
@@ -298,29 +312,32 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
   }
 
   // 요일 헤더
-  Widget _buildWeekHeader() {
+  Widget _buildWeekHeader(double scale, double tScale) {
     const days = ['월', '화', '수', '목', '금', '토', '일'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: days.map((e) {
-        final color = e == '일'
-            ? Colors.red
-            : e == '토'
-            ? Colors.blue
-            : Colors.black87;
-        return Text(e,
-            style: TextStyle(fontWeight: FontWeight.bold, color: color));
+        final color =
+        e == '일' ? Colors.red : e == '토' ? Colors.blue : Colors.black87;
+        return Text(
+          e,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: color,
+            fontSize: 13 * scale * tScale,
+          ),
+        );
       }).toList(),
     );
   }
 
-  // 📅 날짜 클릭 시 상세보기
-  void _showDayInfo(BuildContext context, CalendarDay day) {
+  // 📅 상세 정보 bottom sheet
+  void _showDayInfo(
+      BuildContext context, CalendarDay day, double scale, double tScale) {
     final weekdayNames = ['월', '화', '수', '목', '금', '토', '일'];
     final weekday = weekdayNames[
     (DateTime(day.solarYear, day.solarMonth, day.solarDay).weekday + 6) % 7];
 
-    // 각 간지 분리
     final yearGan = day.hyGanJee.characters.first;
     final yearJi = day.hyGanJee.characters.last;
     final monthGan = day.hmGanJee.characters.first;
@@ -328,33 +345,38 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
     final dayGan = day.hdGanJee.characters.first;
     final dayJi = day.hdGanJee.characters.last;
 
-    // 오행 추출
-    final yearGanElem = heavenlyStems.firstWhere(
-          (e) => e.name == yearGan,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
-    final yearJiElem = earthlyBranches.firstWhere(
-          (e) => e.name == yearJi,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
+    final yearGanElem = heavenlyStems
+        .firstWhere((e) => e.name == yearGan,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
+    final yearJiElem = earthlyBranches
+        .firstWhere((e) => e.name == yearJi,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
 
-    final monthGanElem = heavenlyStems.firstWhere(
-          (e) => e.name == monthGan,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
-    final monthJiElem = earthlyBranches.firstWhere(
-          (e) => e.name == monthJi,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
+    final monthGanElem = heavenlyStems
+        .firstWhere((e) => e.name == monthGan,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
+    final monthJiElem = earthlyBranches
+        .firstWhere((e) => e.name == monthJi,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
 
-    final dayGanElem = heavenlyStems.firstWhere(
-          (e) => e.name == dayGan,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
-    final dayJiElem = earthlyBranches.firstWhere(
-          (e) => e.name == dayJi,
-      orElse: () => const StemBranch(name: '', element: '토', yinYang: '양'),
-    ).element;
+    final dayGanElem = heavenlyStems
+        .firstWhere((e) => e.name == dayGan,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
+    final dayJiElem = earthlyBranches
+        .firstWhere((e) => e.name == dayJi,
+        orElse: () =>
+        const StemBranch(name: '', element: '토', yinYang: '양'))
+        .element;
 
     showModalBottomSheet(
       context: context,
@@ -364,27 +386,26 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24 * scale),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 🗓️ 양력 + 요일
               Text(
                 '${day.solarYear}년 ${day.solarMonth}월 ${day.solarDay}일 ($weekday)',
-                style: const TextStyle(
-                  fontSize: 22,
+                style: TextStyle(
+                  fontSize: 22 * scale * tScale,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12 * scale),
 
-              // 오행색 적용된 간지표시 (크게!)
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 32,
+                  style: TextStyle(
+                    fontSize: 32 * scale,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                   children: [
                     TextSpan(
@@ -397,10 +418,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(yearJiElem)),
                     ),
-                    const TextSpan(
-                      text: '年  ',
-                      style: TextStyle(color: Colors.black87),
-                    ),
+                    TextSpan(text: '年  '),
                     TextSpan(
                       text: monthGan,
                       style: TextStyle(
@@ -411,10 +429,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(monthJiElem)),
                     ),
-                    const TextSpan(
-                      text: '月  ',
-                      style: TextStyle(color: Colors.black87),
-                    ),
+                    TextSpan(text: '月  '),
                     TextSpan(
                       text: dayGan,
                       style: TextStyle(
@@ -425,40 +440,39 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(dayJiElem)),
                     ),
-                    const TextSpan(
-                      text: '日',
-                      style: TextStyle(color: Colors.black87),
-                    ),
+                    TextSpan(text: '日'),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16 * scale),
 
-              // 🌙 음력 + 절기
               Text(
                 '${day.isLeapMonth ? "윤" : "음"}${day.lunarMonth}.${day.lunarDay}'
                     '${day.termName != null ? " • ${day.termName!}" : ""}',
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 18 * scale,
                   color: Colors.black54,
                 ),
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24 * scale),
+
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.fire,
                   foregroundColor: Colors.white,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 36 * scale,
+                    vertical: 14 * scale,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10 * scale),
+                  ),
                 ),
-                child: const Text('닫기', style: TextStyle(fontSize: 18)),
+                child: Text('닫기', style: TextStyle(fontSize: 18 * scale)),
               ),
-              const SizedBox(height: 8),
             ],
           ),
         );

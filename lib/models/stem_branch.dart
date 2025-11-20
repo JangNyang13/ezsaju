@@ -27,20 +27,20 @@ const List<StemBranch> heavenlyStems = [
   StemBranch(name: '癸', element: '수', yinYang: '음'),
 ];
 
-// 🧭 지지 목록 (지장간 포함)
+// 🧭 지지 목록 (지장간 포함)  --- 자수,해수,사화,오화는 체와 용이 다르므로 음양을 바꾸어서..
 const List<StemBranch> earthlyBranches = [
-  StemBranch(name: '子', element: '수', yinYang: '양', hiddenStems: ['癸', '壬']),
+  StemBranch(name: '子', element: '수', yinYang: '음', hiddenStems: ['癸', '壬']),
   StemBranch(name: '丑', element: '토', yinYang: '음', hiddenStems: ['己', '辛', '癸']),
   StemBranch(name: '寅', element: '목', yinYang: '양', hiddenStems: ['甲', '丙', '戊']),
   StemBranch(name: '卯', element: '목', yinYang: '음', hiddenStems: ['乙', '甲']),
   StemBranch(name: '辰', element: '토', yinYang: '양', hiddenStems: ['戊', '癸', '乙']),
-  StemBranch(name: '巳', element: '화', yinYang: '음', hiddenStems: ['丙', '庚', '戊']),
-  StemBranch(name: '午', element: '화', yinYang: '양', hiddenStems: ['丁', '己', '丙']),
+  StemBranch(name: '巳', element: '화', yinYang: '양', hiddenStems: ['丙', '庚', '戊']),
+  StemBranch(name: '午', element: '화', yinYang: '음', hiddenStems: ['丁', '己', '丙']),
   StemBranch(name: '未', element: '토', yinYang: '음', hiddenStems: ['己', '乙', '丁']),
   StemBranch(name: '申', element: '금', yinYang: '양', hiddenStems: ['庚', '壬', '戊']),
   StemBranch(name: '酉', element: '금', yinYang: '음', hiddenStems: ['辛', '庚']),
   StemBranch(name: '戌', element: '토', yinYang: '양', hiddenStems: ['戊', '丁', '辛']),
-  StemBranch(name: '亥', element: '수', yinYang: '음', hiddenStems: ['壬', '甲', '戊']),
+  StemBranch(name: '亥', element: '수', yinYang: '양', hiddenStems: ['壬', '甲', '戊']),
 ];
 
 /// 천간 → 오행 매핑

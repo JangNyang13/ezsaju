@@ -18,6 +18,12 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
   late Future<List<CalendarDay>> _manseFuture;
   late TabController _tabController;
 
+  // 전체 화면 스케일 값
+  late double sw;       // width
+  late double sh;       // height
+  late double scale;    // 기준 스케일 (390dp 기준)
+  late double tScale;   // text scale
+
   @override
   void initState() {
     super.initState();
@@ -27,32 +33,44 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
 
   @override
   Widget build(BuildContext context) {
+    sw = MediaQuery.of(context).size.width;
+    sh = MediaQuery.of(context).size.height;
+    final textScaler = MediaQuery.of(context).textScaler;
+    final tScale = textScaler.scale(1.0).clamp(0.8, 1.2);
+    scale = sw / 390; // iPhone 12 width 기준 스케일
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('만세력'),
+        title: Text(
+          '만세력',
+          style: TextStyle(
+            fontSize: 18 * scale * tScale,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: AppColors.background,
       ),
       body: Column(
         children: [
-          //  TabBar만 따로 배치 (AppBar에서 분리)
-          Container(
-            height: 40, // 👈 원하는 높이로 조절 가능 (기본 48 → 줄임)
-            alignment: Alignment.center,
+          // ▫️ TabBar
+          SizedBox(
+            height: 40 * scale,
             child: TabBar(
               controller: _tabController,
+              labelStyle: TextStyle(fontSize: 14 * scale * tScale),
+              unselectedLabelStyle:
+              TextStyle(fontSize: 13 * scale * tScale),
               tabs: const [
                 Tab(text: '월간'),
                 Tab(text: '주간'),
               ],
               labelColor: AppColors.fire,
               unselectedLabelColor: AppColors.textSecondary,
-              labelPadding: EdgeInsets.zero,
-              indicatorWeight: 2,
+              indicatorWeight: 2 * scale,
             ),
           ),
 
-          //TabBarView 내용
+          // ▫️ Tab View (월간 / 주간)
           Expanded(
             child: FutureBuilder<List<CalendarDay>>(
               future: _manseFuture,
@@ -61,6 +79,7 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
                   return const Center(child: CircularProgressIndicator());
                 }
                 final manse = snapshot.data!;
+
                 return TabBarView(
                   controller: _tabController,
                   children: [
@@ -75,5 +94,4 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
       ),
     );
   }
-
 }
