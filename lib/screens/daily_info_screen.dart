@@ -1,3 +1,5 @@
+import 'package:ezsaju/screens/simulation_saju_screen.dart';
+import 'package:ezsaju/screens/sipsung_calc_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/text_styles.dart';
@@ -101,14 +103,57 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
         children: [
           // 절기 표시 바
           _buildSolarTermBar(termName),
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
 
           // 오늘의 일진
           _buildIljinCard(iljin),
-          const SizedBox(height: 30),
+          const SizedBox(height: 10),
 
           // 운세 정보
           _buildPersonalFortune(iljin),
+          const SizedBox(height: 20),
+
+          // 사주 시뮬레이션
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // 십성 계산 툴 버튼 추가
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SipsungCalcScreen()),
+                  );
+                },
+                child: const Text(
+                  "십성 계산 도구",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              //사주 시뮬레이션
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(AppColors.primary),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const SimulationSajuScreen()),
+                  );
+                },
+                child: const Text(
+                  "사주 시뮬레이션",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
         ],
       ),
     );

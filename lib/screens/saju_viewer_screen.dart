@@ -64,7 +64,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
     }
   }
 
-  /// ✅ 만세력 매칭 (양력 기준으로만)
+  /// 만세력 매칭 (양력 기준으로만)
   Future<CalendarDay?> _findManseDate(Profile profile) async {
     final manse = await ManseLoader.load();
 
