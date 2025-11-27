@@ -11,7 +11,26 @@ import '../services/saju_calculator.dart';
 import '../constants/app_colors.dart';
 import '../utils/solar_term_color.dart';
 import '../utils/solar_term_effect.dart';
+import '../widgets/solar_term_segment_bar.dart';
 import '../widgets/wavy_term_bar.dart';
+
+//절기진행바
+class SolarTermInfo {
+  final String currentTermName;
+  final DateTime currentTermDate;
+  final String nextTermName;
+  final DateTime nextTermDate;
+
+  SolarTermInfo({
+    required this.currentTermName,
+    required this.currentTermDate,
+    required this.nextTermName,
+    required this.nextTermDate,
+  });
+}
+
+
+
 
 class DailyInfoScreen extends ConsumerStatefulWidget {
   const DailyInfoScreen({super.key});
@@ -60,6 +79,79 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
     });
   }
 
+  //절기진행바 생성 함수
+  SolarTermInfo getTodaySolarTermInfo() {
+    final manse = ManseLoader.cachedData!;
+    final today = DateTime.now();
+
+    // 오늘 날짜 항목 찾기
+    final todayInfo = manse.firstWhere(
+          (d) =>
+      d.solarYear == today.year &&
+          d.solarMonth == today.month &&
+          d.solarDay == today.day,
+      orElse: () => manse.last,
+    );
+
+    // 현재 절기 찾기
+    String? currentTerm = todayInfo.termName;
+    DateTime currentTermDate = DateTime(
+      todayInfo.solarYear,
+      todayInfo.solarMonth,
+      todayInfo.solarDay,
+    );
+
+    if (currentTerm == null) {
+      for (int i = manse.indexOf(todayInfo) - 1; i >= 0; i--) {
+        if (manse[i].termName != null) {
+          currentTerm = manse[i].termName;
+          currentTermDate = DateTime(
+            manse[i].solarYear,
+            manse[i].solarMonth,
+            manse[i].solarDay,
+          );
+          break;
+        }
+      }
+    }
+
+    // 다음 절기 찾기
+    String nextTerm = currentTerm!;
+    DateTime nextTermDate = currentTermDate;
+
+    final startIndex = manse.indexOf(todayInfo);
+    for (int i = startIndex + 1; i < manse.length; i++) {
+      if (manse[i].termName != null) {
+        nextTerm = manse[i].termName!;
+        nextTermDate = DateTime(
+          manse[i].solarYear,
+          manse[i].solarMonth,
+          manse[i].solarDay,
+        );
+        break;
+      }
+    }
+
+    // 마지막 절기 → 다음 해로 연결
+    if (nextTerm == currentTerm) {
+      final firstTerm = manse.firstWhere((d) => d.termName != null);
+      nextTerm = firstTerm.termName!;
+      nextTermDate = DateTime(
+        firstTerm.solarYear,
+        firstTerm.solarMonth,
+        firstTerm.solarDay,
+      );
+    }
+
+    return SolarTermInfo(
+      currentTermName: currentTerm,
+      currentTermDate: currentTermDate,
+      nextTermName: nextTerm,
+      nextTermDate: nextTermDate,
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +187,8 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
     final today = todayData!;
     final iljin = today.hdGanJee; // 예: 甲子
     final termName = today.termName ?? "절기 없음";
+    //절기진행 바
+    final solarInfo = getTodaySolarTermInfo();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -104,6 +198,18 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
           // 절기 표시 바
           _buildSolarTermBar(termName),
           const SizedBox(height: 10),
+          //절기 진행 바
+          SolarTermSegmentBar(
+            currentTerm: solarInfo.currentTermName,
+            currentTermDate: solarInfo.currentTermDate,
+            nextTerm: solarInfo.nextTermName,
+            nextTermDate: solarInfo.nextTermDate,
+            today: DateTime.now(),
+          ),
+
+
+
+
 
           // 오늘의 일진
           _buildIljinCard(iljin),
