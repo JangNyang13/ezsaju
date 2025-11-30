@@ -5,8 +5,8 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-# v2버전 절기진행바 추가 1.1.4 +16
-version: 1.1.4+16
+# v2버전 사주시뮬 합충 주석(십성계산스크린에서 가져옴)추가와 십성추가  1.1.4 +17
+version: 1.1.4+17
 
 environment:
   sdk: ^3.8.1
