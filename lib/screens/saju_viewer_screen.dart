@@ -6,18 +6,21 @@ import '../models/saju_data.dart';
 import '../providers/selected_profile_provider.dart';
 import '../constants/app_colors.dart';
 import '../services/manse_loader.dart';
-import '../services/module/gyeokguk_module.dart';
-import '../services/module/gyeokguk_pattern_module.dart';
 import '../services/module/sinsal_module.dart';
 import '../services/saju_calculator.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/saju_box_view.dart';
 import '../widgets/daewoon_section.dart';
-import 'gyeokguk_detail_screen.dart';
+//--
+import '../widgets/joyong_result_view.dart';
+import '../services/module/goongtong/joyong_rule_loader.dart';
+import '../services/module/goongtong/joyong_evaluator.dart';
+
 
 class SajuViewerScreen extends ConsumerStatefulWidget {
   final Profile? profileOverride;
   const SajuViewerScreen({super.key, this.profileOverride});
+
 
   @override
   ConsumerState<SajuViewerScreen> createState() => _SajuViewerScreenState();
@@ -33,7 +36,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
     _calculateIfProfileExists();
   }
 
-  /// ✅ 사주 계산 (이제 항상 양력으로 저장되어 있으므로 변환 불필요)
+  /// 사주 계산 (이제 항상 양력으로 저장되어 있으므로 변환 불필요)
   Future<void> _calculateIfProfileExists() async {
     final profile = widget.profileOverride ?? ref.read(selectedProfileProvider);
     if (profile == null) return;
@@ -123,7 +126,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                 children: [
                   // 이름 + 프로필 헤더
                   ProfileHeader(profile: profile, lunar: lunar),
-      
+
                   const Divider(
                     height: 15,
                     thickness: 1,
@@ -131,81 +134,25 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                     indent: 8,
                     endIndent: 8,
                   ),
-      
-                  // ⭐ 격국 + 보조 패턴을 하나의 Chip으로 표시
-                  Builder(
-                    builder: (_) {
-                      final gyeok = GyeokgukModule.interpret(_saju!);
-                      final patterns = GyeokgukPatternModule.analyze(gyeok, _saju!);
-      
-                      final label = patterns.isEmpty
-                          ? gyeok
-                          : "$gyeok - ${patterns.join(', ')}";
-      
-                      return Center(
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => GyeokgukDetailScreen(
-                                  gyeok: gyeok,
-                                  patterns: patterns,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(4),
-      
-                              // ⭐ 버튼 느낌을 주는 그림자
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black45,
-                                  blurRadius: 3,
-                                  offset: Offset(0, 2), // 아래로 살짝 떨어지는 느낌
-                                ),
-                              ],
-                            ),
-                            child: Text(
-                              '$label 상세보기',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: AppColors.background,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-      
-      
-      
+
                   const SizedBox(height: 12),
-      
+
                   if (_saju == null)
                     const Text('사주 데이터를 불러오는 중입니다...')
                   else ...[
                     // 사주팔자 및 신살
                     SajuBoxView(saju: _saju!, profile: profile),
-      
+
                     // 공망 표시
                     Builder(builder: (_) {
                       final sinsal = SinsalEngine.interpret(_saju!);
                       final gongInfo =
                       sinsal['공망정보'] as Map<String, List<String>>?;
                       if (gongInfo == null) return const SizedBox.shrink();
-      
+
                       final yearGong = gongInfo['년공망']?.join(', ') ?? '';
                       final dayGong = gongInfo['일공망']?.join(', ') ?? '';
-      
+
                       return Padding(
                         padding:
                         const EdgeInsets.symmetric(vertical: 8.0),
@@ -225,7 +172,43 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                         ),
                       );
                     }),
-      
+
+                    // =======================
+                    // 🔹 조후(선·차용) 해석 영역
+                    // =======================
+                    FutureBuilder(
+                      future: JoyongRuleLoader.load(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        final rules = snapshot.data!;
+                        final rule =
+                        rules[_saju!.dayStem]?[_saju!.monthBranch];
+
+                        if (rule == null) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              '조후 규칙이 정의되지 않은 사주입니다.',
+                              style: TextStyle(fontSize: 13, color: Colors.black54),
+                            ),
+                          );
+                        }
+
+                        final result = JoyongEvaluator.evaluate(_saju!, rule);
+
+                        return JoyongResultView(result: result);
+                      },
+                    ),
+                    // =======================
+                    // 🔹 조후 영역 끝
+                    // =======================
+
                     const Divider(
                       height: 15,
                       thickness: 1,
@@ -233,7 +216,7 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
                       indent: 8,
                       endIndent: 8,
                     ),
-      
+
                     // 대운 / 세운 / 월운
                     DaewoonSection(
                       saju: _saju!,

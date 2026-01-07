@@ -5,8 +5,8 @@ description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 
-# v2버전 사주시뮬 합충 주석(십성계산스크린에서 가져옴)추가와 십성추가  1.1.4 +17
-version: 1.1.4+17
+# v2버전 사주시뮬 십성 수정  1.1.4 +18
+version: 1.1.4+18
 
 environment:
   sdk: ^3.8.1
@@ -66,8 +66,7 @@ flutter:
   assets:
     - assets/
     - assets/data/manse_1900_2100.json
-    - assets/data/gyeokguk_patterns.json
-    - assets/data/gyeokguk_descriptions.json
+    - assets/data/joyong_rules.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

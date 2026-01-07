@@ -189,7 +189,7 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
     }
 
     // 정인 / 편인 (나를 생함)
-    return (otherYY == '양') ? "편인" : "정인";
+    return (otherYY == '양') ? "정인" : "편인";
   }
 
 
@@ -481,25 +481,35 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
                     DefaultTextStyle(
                       style: TextStyle(
                         fontSize: 13,
-                        height: 1.4,              // 🔥 줄 간격 살짝 넓게
+                        height: 1.5,              // 🔥 줄 간격 살짝 넓게
                         color: AppColors.primary,
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
-                          Text("방위운 : 갑을(동방목), 병정(남방화), 무기(중앙토), 경신(서방금), 임계(북방수)"),
+                          Text("=====방위운====="),
+                          Text("갑을(동방목), 병정(남방화)"),
+                          Text("무기(중앙토), 경신(서방금), 임계(북방수)"),
                           SizedBox(height: 4),
-                          Text("천간합 : 갑기(토), 을경(금), 병신(수), 정임(목), 무계(화)"),
+                          Text("=====천간합====="),
+                          Text("갑기(토), 을경(금)"),
+                          Text("병신(수), 정임(목), 무계(화)"),
                           SizedBox(height: 4),
-                          Text("지지합 : 자축(토), 인해(목), 묘술(화), 진유(금), 사신(수), 오미(화)"),
+                          Text("=====지지합====="),
+                          Text("자축(토), 인해(목), 묘술(화)"),
+                          Text("진유(금), 사신(수), 오미(화)"),
                           SizedBox(height: 4),
-                          Text("삼합 : 신자진(수국), 해묘미(목국), 인오술(화), 사유축(금), 진술축미(토)"),
+                          Text("=====삼합====="),
+                          Text("신자진(수국), 해묘미(목국) "),
+                          Text("인오술(화), 사유축(금), 진술축미(토)"),
                           Text("[3개중 2개만 와도 반합]"),
                           SizedBox(height: 4),
-                          Text("방합 : 인묘진(목), 사오미(화), 신유술(금), 해자축(수)"),
+                          Text("=====방합====="),
+                          Text("인묘진(목), 사오미(화), 신유술(금), 해자축(수)"),
                           Text("[느슨하지만 운에서 충오면 가족처럼 끈끈해짐]"),
                           SizedBox(height: 4),
-                          Text("지지충 : 인신, 사해, 자오, 묘유, 진술, 축미"),
+                          Text("=====지지충====="),
+                          Text("인신, 사해, 자오, 묘유, 진술, 축미"),
                         ],
                       ),
                     ),

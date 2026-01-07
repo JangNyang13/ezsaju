@@ -1,0 +1,164 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "description": "조후 환경 감점 규칙 - 인월 갑목"
+  },
+  "rules": [
+
+    /* 1️⃣ 경금·신금 + 금기 지지 */
+    {
+      "id": "env_甲寅_001",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "stems": { "any": ["庚", "辛"] },
+        "branches": { "any": ["酉", "申", "丑"] }
+      },
+      "penalty": { "score": -1 },
+      "reason": "갑목이 금기 지지와 강금에 의해 제약됨"
+    },
+
+    /* 2️⃣ 금국 (삼합/반합) */
+    {
+      "id": "env_甲寅_002",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "금국"
+      },
+      "penalty": { "score": -1 },
+      "reason": "금국 형성으로 갑목의 뿌리가 손상됨"
+    },
+
+    /* 3️⃣ 금방합 */
+    {
+      "id": "env_甲寅_003",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "bangGroup": "금방합"
+      },
+      "penalty": { "score": -1 },
+      "reason": "금방합으로 목기 억압"
+    },
+
+    /* 4️⃣ 수기 과다 + 조절 부재 */
+    {
+      "id": "env_甲寅_004",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "branches": { "any": ["亥", "子"] },
+        "stems": {
+          "any": ["壬", "癸"],
+          "none": ["丙", "丁", "戊", "己"]
+        }
+      },
+      "penalty": { "score": -1 },
+      "reason": "수기 과다에 비해 조절 화·토 부재"
+    },
+
+    /* 5️⃣ 정화 단독 투출 (경금 없음) */
+    {
+      "id": "env_甲寅_005",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "stems": {
+          "any": ["丁"],
+          "none": ["庚"]
+        }
+      },
+      "penalty": { "score": 1 },
+      "reason": "정화 단독 작용으로 목기 순화"
+    },
+
+    /* 6️⃣ 화국 */
+    {
+      "id": "env_甲寅_006",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "화국"
+      },
+      "penalty": { "score": -1 },
+      "reason": "화국 과다로 정신적 소모 증가"
+    },
+
+    /* 7️⃣ 목국 + 경금 유무 */
+    {
+      "id": "env_甲寅_007a",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "목국",
+        "stems": { "none": ["庚"] }
+      },
+      "penalty": { "score": -1 },
+      "reason": "목국 형성이나 절제 금기 부재"
+    },
+    {
+      "id": "env_甲寅_007b",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "목국",
+        "stems": { "any": ["庚"] }
+      },
+      "penalty": { "score": 1 },
+      "reason": "목국 속 절제 금기 존재"
+    },
+
+    /* 8️⃣ 수국 + 무토 유무 */
+    {
+      "id": "env_甲寅_008a",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "수국",
+        "stems": { "none": ["戊"] }
+      },
+      "penalty": { "score": -1 },
+      "reason": "수국 과다로 목이 떠다님"
+    },
+    {
+      "id": "env_甲寅_008b",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "juGroup": "수국",
+        "stems": { "any": ["戊"] }
+      },
+      "penalty": { "score": 1 },
+      "reason": "무토로 수기 조절"
+    },
+
+    /* 9️⃣ 경금·무토 존재 가점 */
+    {
+      "id": "env_甲寅_009",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "stems": { "any": ["庚", "戊"] }
+      },
+      "penalty": { "score": 1 },
+      "reason": "절제와 기반 형성"
+    },
+
+    /* 🔟 경금·무토 + 정화 */
+    {
+      "id": "env_甲寅_010",
+      "dayStem": "甲",
+      "monthBranch": "寅",
+      "condition": {
+        "stems": {
+          "any": ["庚", "戊"],
+          "and": ["丁"]
+        }
+      },
+      "penalty": { "score": 1 },
+      "reason": "절제·기반·온기 삼요소 완성"
+    }
+
+  ]
+}
