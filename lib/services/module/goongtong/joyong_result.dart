@@ -14,6 +14,9 @@ class JoyongResult {
   final List<String> negativeFactors; // 감점 사유
   final List<String> positiveFactors; // 가점/유지 사유
 
+  final List<String> cautionMessages;      // 환경 우려
+  final List<String> expectationMessages;  // 환경 기대
+
   JoyongResult({
     required this.score,
     required this.levelName,
@@ -25,5 +28,7 @@ class JoyongResult {
     required this.subYongFoundAt,
     required this.negativeFactors,
     required this.positiveFactors,
+    required this.cautionMessages,
+    required this.expectationMessages,
   });
 }

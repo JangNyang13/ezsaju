@@ -1,5 +1,6 @@
 import '../../../models/saju_data.dart';
 import '../../analysis/saju_analyzer.dart';
+import 'joyong_environment_evaluator.dart';
 import 'joyong_rule.dart';
 import 'joyong_result.dart';
 import '../../../models/stem_branch.dart';
@@ -88,6 +89,20 @@ class JoyongEvaluator {
     if (hasMain) positiveFactors.add('주용신 작용');
     if (hasSub) positiveFactors.add('보조용신 보완');
 
+    /// =============================
+    /// 5-1️⃣ 환경 멘트 평가 (⭐ 여기!)
+    /// =============================
+    final cautionMessages = <String>[];
+    final expectationMessages = <String>[];
+
+    JoyongEnvironmentEvaluator.evaluate(
+      dayStem: saju.dayStem,
+      monthBranch: saju.monthBranch,
+      analysis: analysis,
+      cautionMessages: cautionMessages,
+      expectationMessages: expectationMessages,
+    );
+
     /// -----------------------------
     /// 6️⃣ 결과 반환
     /// -----------------------------
@@ -102,6 +117,9 @@ class JoyongEvaluator {
       negativeFactors: negativeFactors,
       mainYongsUsed: mainYongsUsed,
       subYongsUsed: subYongsUsed,
+
+      cautionMessages: cautionMessages,
+      expectationMessages: expectationMessages,
     );
   }
 
@@ -165,17 +183,17 @@ class JoyongEvaluator {
   static String _levelName(int score) {
     switch (score) {
       case 5:
-        return '부귀';
+        return '부귀'; //
       case 4:
-        return '준수';
+        return '준수'; //
       case 3:
-        return '보통';
+        return '보통'; //
       case 2:
-        return '미흡';
+        return '미흡'; //
       case 1:
-        return '부담';
+        return '부담'; //
       default:
-        return '보통';
+        return '보통'; //
     }
   }
 }

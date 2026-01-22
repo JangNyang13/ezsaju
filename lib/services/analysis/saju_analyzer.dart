@@ -49,10 +49,26 @@ class SajuAnalyzer {
     if (hasJuWithKing({'巳','酉','丑'}, '酉')) juGroups.add('금국');
 
     final bangGroups = <String>{};
-    if (hasBang({'亥','子','丑'})) bangGroups.add('수방합');
-    if (hasBang({'寅','卯','辰'})) bangGroups.add('목방합');
-    if (hasBang({'巳','午','未'})) bangGroups.add('화방합');
-    if (hasBang({'申','酉','戌'})) bangGroups.add('금방합');
+    // 🔹 방합 (3개 완성 시 → 같은 국으로도 인정)
+    if (hasBang({'亥','子','丑'})) {
+      bangGroups.add('수방합');
+      juGroups.add('수국'); // ⭐ 핵심
+    }
+
+    if (hasBang({'寅','卯','辰'})) {
+      bangGroups.add('목방합');
+      juGroups.add('목국');
+    }
+
+    if (hasBang({'巳','午','未'})) {
+      bangGroups.add('화방합');
+      juGroups.add('화국');
+    }
+
+    if (hasBang({'申','酉','戌'})) {
+      bangGroups.add('금방합');
+      juGroups.add('금국');
+    }
 
 
     /// 통근
