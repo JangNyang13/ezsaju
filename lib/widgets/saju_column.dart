@@ -64,19 +64,19 @@ class SajuColumn extends StatelessWidget {
           Text(
             "($ganjiKor)",
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.primary,
+              color: AppColors.textPrimaryOf(context),
               height: 1.2,
             ),
           ),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
-              color: AppColors.primary,
+              color: AppColors.textPrimaryOf(context),
               fontWeight: FontWeight.w600,
               height: 1.2,
             ),
@@ -88,7 +88,7 @@ class SajuColumn extends StatelessWidget {
               stemTenGod,
               textAlign: TextAlign.center,
               style:
-              const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
+              TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context), height: 1.1),
             ),
 
           const SizedBox(height: 4),
@@ -97,7 +97,7 @@ class SajuColumn extends StatelessWidget {
           GapjaBox(
             text: stem,
             color: (stem == '-' || stem.isEmpty)
-                ? AppColors.background
+                ? AppColors.backgroundOf(context)
                 : AppColors.fromGanji(stem),
             size: boxSize,
           ),
@@ -108,7 +108,7 @@ class SajuColumn extends StatelessWidget {
           GapjaBox(
             text: branch,
             color: (branch == '-' || branch.isEmpty)
-                ? AppColors.background
+                ? AppColors.backgroundOf(context)
                 : AppColors.fromGanji(branch),
             size: boxSize,
           ),
@@ -117,7 +117,7 @@ class SajuColumn extends StatelessWidget {
             Text(
               branchTenGod,
               style:
-              const TextStyle(fontSize: 13, color: AppColors.primary, height: 1.1),
+              TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context), height: 1.1),
               textAlign: TextAlign.center,
             ),
 
@@ -162,9 +162,9 @@ class SajuColumn extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 1.5),
                         child: Text(
                           tenGod,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.primary,
+                            color: AppColors.textPrimaryOf(context),
                             height: 1.0,
                           ),
                         ),
@@ -180,13 +180,13 @@ class SajuColumn extends StatelessWidget {
           if (luckStage != null)
             Text(
               "(봉)$luckStage",
-              style: const TextStyle(fontSize: 12, color: AppColors.primary),
+              style: TextStyle(fontSize: 12, color: AppColors.textPrimaryOf(context)),
               textAlign: TextAlign.center,
             ),
           if (geoStage != null)
             Text(
               "(거)$geoStage",
-              style: const TextStyle(fontSize: 12, color: AppColors.primary),
+              style: TextStyle(fontSize: 12, color: AppColors.textPrimaryOf(context)),
               textAlign: TextAlign.center,
             ),
 
@@ -200,8 +200,8 @@ class SajuColumn extends StatelessWidget {
                         (s) => Text(
                       s.replaceAll(RegExp(r'\(.*\)'), ''),
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.teal,
+                      style: TextStyle(
+                        color: Colors.teal[300],
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         height: 1.3,

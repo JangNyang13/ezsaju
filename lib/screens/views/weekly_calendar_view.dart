@@ -42,7 +42,7 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
           child: Text(
             '${_focusedDate.year}년 ${_focusedDate.month}월 주간',
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -84,10 +84,10 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
                 margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: AppColors.cardOf(context),
                   borderRadius: BorderRadius.circular(12),
                   border: isToday
-                      ? Border.all(color: AppColors.primary, width: 2)
+                      ? Border.all(color: AppColors.textPrimaryOf(context), width: 2)
                       : null, // ✅ 오늘이면 테두리 표시
                   boxShadow: [
                     BoxShadow(
@@ -112,13 +112,13 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
                                 ? Colors.blue
                                 : weekday == '일'
                                 ? Colors.red
-                                : Colors.black87,
+                                : AppColors.textPrimaryOf(context),
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '${day.solarMonth}.${day.solarDay}',
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
@@ -129,7 +129,7 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
                         Text(
                           gan,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: AppColors.elementColor(ganElement),
                           ),
@@ -138,7 +138,7 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
                         Text(
                           ji,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: AppColors.elementColor(jiElement),
                           ),
@@ -152,9 +152,9 @@ class _WeeklyCalendarViewState extends State<WeeklyCalendarView> {
                       children: [
                         Text(
                           '${day.isLeapMonth ? "윤" : "음"}${day.lunarMonth}.${day.lunarDay}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.black54,
+                            color: AppColors.textPrimaryOf(context),
                           ),
                         ),
                         if (day.termName != null)

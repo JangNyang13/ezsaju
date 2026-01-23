@@ -82,19 +82,30 @@ class _DaewoonSectionState extends State<DaewoonSection> {
 
   /// 🔹 월운 목록
   List<Map<String, dynamic>> _getMonthList(int year) {
-    final monthSet = <String>{};
-    final monthList = _manse!
-        .where((d) => d.solarYear == year && d.hmGanJee.isNotEmpty)
-        .where((d) => monthSet.add(d.hmGanJee))
+    // ✅ 절입일(월 경계)을 기준으로 월운 구분
+    final termDays = _manse!
+        .where((d) => d.solarYear == year && d.termName != null)
         .toList();
 
-    return monthList.map((d) {
-      final month = d.solarMonth;
-      final ganji = d.hmGanJee;
-      final gan = ganji.isNotEmpty ? ganji.substring(0, 1) : '?';
+    // ✅ 다음 절입일 기준으로 한 칸 당겨서 월 계산
+    final monthList = <Map<String, dynamic>>[];
+
+    for (int i = 0; i < termDays.length - 1; i++) {
+      final nextTerm = termDays[i + 1];
+      final ganji = nextTerm.hmGanJee;
+      final month = nextTerm.solarMonth;
+      if (ganji.isEmpty) continue;
+
+      final gan = ganji.substring(0, 1);
       final ji = ganji.length > 1 ? ganji.substring(1, 2) : '?';
-      return {'month': month, 'stem': gan, 'branch': ji};
-    }).toList();
+
+      // ✅ 중복 월 제거
+      if (monthList.any((m) => m['month'] == month)) continue;
+
+      monthList.add({'month': month, 'stem': gan, 'branch': ji});
+    }
+
+    return monthList;
   }
 
   @override

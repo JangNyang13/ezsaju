@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
-import 'text_styles.dart';
 
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  scaffoldBackgroundColor: AppColors.background,
+  scaffoldBackgroundColor: AppColors.yang,
   fontFamily: 'NotoSansKR',
   colorScheme: const ColorScheme.light(
     primary: AppColors.primary,
     secondary: AppColors.secondary,
     surface: AppColors.surface,
   ),
-  textTheme: const TextTheme(
-    bodyMedium: AppTextStyles.body,
-    titleMedium: AppTextStyles.titleMedium,
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.background,
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.yang,
     elevation: 0,
-    titleTextStyle: AppTextStyles.titleMedium,
+    titleTextStyle: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      color: AppColors.textPrimary,
+    ),
     iconTheme: IconThemeData(color: AppColors.textPrimary),
   ),
 );
@@ -32,17 +31,14 @@ final ThemeData darkTheme = ThemeData(
     secondary: AppColors.secondary,
     surface: AppColors.surface,
   ),
-  textTheme: const TextTheme(
-    bodyMedium: TextStyle(color: AppColors.yang),
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: AppColors.background,
+  appBarTheme: AppBarTheme(
+    backgroundColor: AppColors.yin,
     elevation: 0,
-    titleTextStyle: TextStyle(
-      color: AppColors.yang,
+    titleTextStyle: const TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.bold,
+      color: AppColors.yang,
     ),
-    iconTheme: IconThemeData(color: AppColors.yang),
+    iconTheme: const IconThemeData(color: AppColors.yang),
   ),
 );

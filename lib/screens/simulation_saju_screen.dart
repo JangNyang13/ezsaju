@@ -218,7 +218,7 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
     if (value == null) {
       return GapjaBox(
         text: "+",
-        color: AppColors.secondary,
+        color: AppColors.textSecondaryOf(context),
         size: size,
         showLabel: false,
       );
@@ -247,7 +247,7 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
             sipsung,
             style: TextStyle(
               fontSize: size * 0.19,
-              color: Colors.grey[800],
+              color: AppColors.textPrimaryOf(context),
             ),
           ),
           GapjaBox(
@@ -272,7 +272,7 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
 
     return Column(
       children: [
-                // 지지 본체
+        // 지지 본체
         GapjaBox(
           text: value,
           size: size,
@@ -284,7 +284,7 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
           sipsung,
           style: TextStyle(
             fontSize: size * 0.18,
-            color: Colors.grey[800],
+            color: AppColors.textPrimaryOf(context),
           ),
         ),
 
@@ -383,11 +383,11 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.cardOf(context),
       appBar: AppBar(
         centerTitle: true,
         title: const Text("사주 시뮬레이션"),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -452,13 +452,26 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
                         const Text("순행"),
         
                         const SizedBox(width: 20),
-        
+
                         Radio<bool>(
                           value: false,
                           groupValue: isForward,
-                          onChanged: (v) =>
-                              setState(() => isForward = v!),
+                          activeColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white                // ✅ 다크모드: 흰색
+                              : AppColors.primary,          // ✅ 라이트모드: 기존 메인색
+                          fillColor: WidgetStateProperty.resolveWith((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : AppColors.primary;
+                            }
+                            return Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white.withOpacity(0.6)
+                                : Colors.black.withOpacity(0.6);
+                          }),
+                          onChanged: (v) => setState(() => isForward = v!),
                         ),
+
                         const Text("역행"),
         
                         const SizedBox(width: 30),
@@ -482,11 +495,11 @@ class _SimulationSajuScreenState extends State<SimulationSajuScreen> {
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.5,              // 🔥 줄 간격 살짝 넓게
-                        color: AppColors.primary,
+                        color: AppColors.textPrimaryOf(context),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text("=====방위운====="),
                           Text("인묘진(동방목), 사오미(남방화)"),
                           Text("신유술(서방금), 해자축(북방수)"),

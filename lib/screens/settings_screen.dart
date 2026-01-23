@@ -16,10 +16,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: const Text('설정'),
         centerTitle: true,
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
       ),
       body: ListView(
         children: [

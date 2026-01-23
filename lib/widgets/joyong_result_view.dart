@@ -24,9 +24,9 @@ class JoyongResultView extends StatelessWidget {
               vertical: 14,
             ),
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: AppColors.backgroundOf(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.black12),
+              border: Border.all(color: AppColors.borderOf(context)),
               boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
@@ -107,12 +107,12 @@ class JoyongResultView extends StatelessWidget {
                       children: [
                         if (result.cautionMessages.isNotEmpty) ...[
                           const SizedBox(height: 10),
-                          const Text(
-                            '⚠ 환경 우려',
+                          Text(
+                            '* 참고사항',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: AppColors.textPrimaryOf(context),
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -123,7 +123,7 @@ class JoyongResultView extends StatelessWidget {
                                 messages[id] ?? id, // ⭐ 여기 핵심
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Colors.amber[800],
+                                  color: Colors.blue[400],
                                   height: 1.4,
                                 ),
                               ),

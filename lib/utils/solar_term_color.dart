@@ -68,7 +68,7 @@ import '../constants/app_colors.dart';
         return (primary: AppColors.metal, secondary: AppColors.metal);
       }
       // 이후 fire + water 이중 물결
-      return (primary: AppColors.fire, secondary: AppColors.water);
+      return (primary: AppColors.fire, secondary: AppColors.fire);
 
     case '상강':
       if (dayOffset < 15) return (primary: AppColors.earth, secondary: AppColors.earth);

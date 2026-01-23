@@ -16,16 +16,44 @@ class AppColors {
   static const yin  = Color(0xFF2B2B2B);   // 어두운 색 (陰)
   static const yang = Color(0xFFF6F3E7);   // 밝은 색 (陽)
 
-  // UI 공통 색상
+  // ─────────────────────────────
+  // 🎨 테마 대응 UI 색상
+  // ─────────────────────────────
   static const primary     = Color(0xFF424242);
   static const secondary   = Color(0xFFcccccc);
   static const surface     = Color(0xFFfaf9f6);
-  static const background  = Color(0xFFfaf9f6);
-  static const card        = Color(0xFFEFF1F3);
-  static const border      = Color(0xFFDAD5C2);
+  static const error       = Color(0xFFB00020);
+  static const background  = Color(0xFFFAF9F6);
+
+
+  // 고정 프리뷰용 텍스트 컬러 (ThemeData 초기화 시 사용)
   static const textPrimary = Color(0xFF424242);
   static const textSecondary = Color(0xFF777777);
-  static const error       = Color(0xFFB00020);
+
+
+  // 🟢 다크모드 대응 색상 getter (context 기반)
+  static Color backgroundOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark ? yin : surface;
+
+  static Color cardOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? const Color(0xFF707070)
+          : const Color(0xFFEFF1F3);
+
+  static Color borderOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey.shade700
+          : const Color(0xFFDAD5C2);
+
+  static Color textPrimaryOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? surface
+          : const Color(0xFF424242);
+
+  static Color textSecondaryOf(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey.shade400
+          : const Color(0xFF777777);
 
   // ─────────────────────────────
   // 🎨 오행 색상 매핑
@@ -42,13 +70,11 @@ class AppColors {
       case '금': return metal;
       case '水':
       case '수': return water;
-      default: return textSecondary;
+      default: return Colors.grey;
     }
   }
 
-  // ─────────────────────────────
   // ✅ 간지 → 오행 → 색상 자동 변환
-  // ─────────────────────────────
   static Color fromGanji(String ganOrBranch) {
     const ganMap = {
       '甲': '목', '乙': '목', '丙': '화', '丁': '화',

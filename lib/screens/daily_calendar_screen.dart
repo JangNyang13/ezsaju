@@ -40,6 +40,7 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
     scale = sw / 390; // iPhone 12 width 기준 스케일
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: Text(
           '만세력',
@@ -48,7 +49,7 @@ class _DailyCalendarScreenState extends State<DailyCalendarScreen>
           ),
         ),
         centerTitle: true,
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
       ),
       body: Column(
         children: [

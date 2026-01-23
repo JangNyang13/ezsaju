@@ -113,10 +113,11 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
         .toList();
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
         title: const Text('사주 조회'),
         centerTitle: true,
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -127,11 +128,28 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
 
             // 🔍 검색창
             TextField(
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black87,
+              ),
               decoration: InputDecoration(
                 hintText: '프로필 검색',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black45,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white70
+                      : Colors.black54,
+                ),
                 filled: true,
-                fillColor: Colors.grey.shade100,
+                fillColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey.shade800   // ✅ 다크모드용: 진한 회색 배경
+                    : Colors.grey.shade100,  // ✅ 라이트모드용: 밝은 회색 배경
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -139,6 +157,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
               ),
               onChanged: (v) => setState(() => _searchQuery = v.trim()),
             ),
+
             const SizedBox(height: 6),
 
             // 목록
@@ -169,7 +188,7 @@ class _SajuEntryScreenState extends ConsumerState<SajuEntryScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.cardOf(context),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -250,7 +269,7 @@ class ProfileListView extends StatelessWidget {
         itemBuilder: (context, i) {
           final p = profiles[i];
           return Card(
-            color: AppColors.card,
+            color: AppColors.cardOf(context),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

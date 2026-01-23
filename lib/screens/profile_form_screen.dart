@@ -237,7 +237,7 @@ class _ProfileFormScreenState extends ConsumerState<ProfileFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditMode ? '프로필 수정' : '프로필 입력'),
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
       ),
       body: SafeArea(
         child: Padding(

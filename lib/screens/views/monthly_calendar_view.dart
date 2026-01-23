@@ -128,9 +128,14 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                                 fontSize: 14 * scale * tScale,
                                 color: dim
                                     ? Colors.grey.withValues(alpha: 0.4)
-                                    : Colors.black,
+                                    : (
+                                    Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white.withValues(alpha: 0.9) // 다크모드 → 밝은 숫자
+                                        : Colors.black.withValues(alpha: 0.9)  // 라이트모드 → 짙은 검정
+                                ),
                               ),
                             ),
+
 
                             // 간지
                             Text.rich(
@@ -162,8 +167,9 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                               style: TextStyle(
                                 fontSize: 11 * scale,
                                 color: day.isLeapMonth
-                                    ? AppColors.fire.withValues(alpha: 0.6)
-                                    : AppColors.primary.withValues(alpha: 1.0),
+                                    ? AppColors.fire.withValues(alpha: 0.7)
+                                    : AppColors.textPrimaryOf(context),
+
                               ),
                             ),
 
@@ -318,7 +324,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: days.map((e) {
         final color =
-        e == '일' ? Colors.red : e == '토' ? Colors.blue : Colors.black87;
+        e == '일' ? Colors.red : e == '토' ? Colors.blue : AppColors.textPrimaryOf(context);
         return Text(
           e,
           style: TextStyle(
@@ -380,7 +386,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.backgroundOf(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -418,7 +424,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(yearJiElem)),
                     ),
-                    TextSpan(text: '年  '),
+                    TextSpan(text: '年  ', style: TextStyle(color: AppColors.textPrimaryOf(context))),
                     TextSpan(
                       text: monthGan,
                       style: TextStyle(
@@ -429,7 +435,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(monthJiElem)),
                     ),
-                    TextSpan(text: '月  '),
+                    TextSpan(text: '月  ', style: TextStyle(color: AppColors.textPrimaryOf(context))),
                     TextSpan(
                       text: dayGan,
                       style: TextStyle(
@@ -440,7 +446,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                       style: TextStyle(
                           color: AppColors.elementColor(dayJiElem)),
                     ),
-                    TextSpan(text: '日'),
+                    TextSpan(text: '日',  style: TextStyle(color: AppColors.textPrimaryOf(context))),
                   ],
                 ),
               ),
@@ -452,7 +458,7 @@ class _MonthlyCalendarViewState extends State<MonthlyCalendarView> {
                     '${day.termName != null ? " • ${day.termName!}" : ""}',
                 style: TextStyle(
                   fontSize: 18 * scale,
-                  color: Colors.black54,
+                  color: AppColors.textPrimaryOf(context),
                 ),
               ),
 

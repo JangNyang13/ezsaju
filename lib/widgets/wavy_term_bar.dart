@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart'; // ← AppColors를 인식시키기 위해 추가
 
 class WavyTermBar extends StatefulWidget {
   final String label;
@@ -43,14 +42,12 @@ class _WavyTermBarState extends State<WavyTermBar>
 
   @override
   Widget build(BuildContext context) {
-    // ✅ primaryColor가 water 또는 fire이면 글씨를 흰색으로
-    final bool isWater = widget.primaryColor == AppColors.water;
-    final bool isFire = widget.primaryColor == AppColors.fire;
-    final bool isBright = isWater || isFire; // 둘 다 어두운 배경이므로 흰색 텍스트
+    // ✅ 절기 바는 항상 밝은 흰색 계열로
+    final Color fixedPastelBg = const Color(0xFFFAF9F6);
 
-    final Color textColor = isBright ? const Color(0xFF222222) : const Color(0xFF222222);
-    final Color subTextColor = isBright ? Colors.white : Colors.black;
-
+    // ✅ 기존 primary/secondary는 그대로 사용
+    final textColor = const Color(0xFF222222);
+    final subTextColor = Colors.black87;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -69,7 +66,8 @@ class _WavyTermBarState extends State<WavyTermBar>
                         time: t,
                         color1: widget.primaryColor,
                         color2: widget.secondaryColor,
-                        backgroundColor: widget.backgroundColor,
+                        // ✅ 다크모드 여부와 상관없이 밝은 배경 유지
+                        backgroundColor: fixedPastelBg,
                       ),
                       size: Size(constraints.maxWidth, constraints.maxHeight),
                     );
@@ -83,7 +81,7 @@ class _WavyTermBarState extends State<WavyTermBar>
                       Text(
                         widget.label,
                         style: TextStyle(
-                          color: textColor, //조건부 색상 적용
+                          color: textColor,
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.1,
@@ -96,7 +94,7 @@ class _WavyTermBarState extends State<WavyTermBar>
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 15,
-                            color: subTextColor, //조건부 색상 적용
+                            color: subTextColor,
                             height: 1.3,
                           ),
                         ),
@@ -111,6 +109,7 @@ class _WavyTermBarState extends State<WavyTermBar>
       },
     );
   }
+
 }
 
 class _WavePainter extends CustomPainter {

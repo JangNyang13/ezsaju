@@ -161,18 +161,19 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundOf(context),
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.backgroundOf(context),
         centerTitle: true,
         elevation: 0,
         title: todayData == null
             ? const SizedBox()
             : Text(
           "${todayData!.solarYear}년 ${todayData!.solarMonth}월 ${todayData!.solarDay}일",
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: AppColors.textPrimaryOf(context),
           ),
         ),
       ),
@@ -207,10 +208,6 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
             today: DateTime.now(),
           ),
 
-
-
-
-
           // 오늘의 일진
           _buildIljinCard(iljin),
           const SizedBox(height: 10),
@@ -235,7 +232,7 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
                   );
                 },
                 child: const Text(
-                  "십성 계산 도구",
+                  "십성 보조 도구",
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -327,7 +324,7 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.cardOf(context),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -340,7 +337,7 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("오늘의 일진", style: AppTextStyles.titleMedium),
+          Text("오늘의 일진", style: AppTextStyles.titleMedium(context)),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -401,24 +398,24 @@ class _DailyInfoScreenState extends ConsumerState<DailyInfoScreen> {
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: AppColors.card,
+      color: AppColors.cardOf(context),
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            Text('$iljin 천간과 지지 특징', style: AppTextStyles.titleMedium),
+            Text('$iljin 천간과 지지 특징', style: AppTextStyles.titleMedium(context),),
             const SizedBox(height: 8),
             Text(
               fortuneMsg,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body,
+                style: AppTextStyles.body(context),
             ),
             const SizedBox(height: 12,),
             Text(
               fortuneMsg2,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body,
+              style: AppTextStyles.body(context),
             ),
           ],
         ),

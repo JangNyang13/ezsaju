@@ -54,8 +54,8 @@ class SolarTermSegmentBar extends StatelessWidget {
                     height: 16,
                     decoration: BoxDecoration(
                       color: isFilled
-                          ? AppColors.primary
-                          : AppColors.secondary,
+                          ? AppColors.textPrimaryOf(context)
+                          : AppColors.textSecondaryOf(context).withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(3),
                     ),
                   );
@@ -73,8 +73,8 @@ class SolarTermSegmentBar extends StatelessWidget {
             ],
           ),
           Text(
-            "다음 절기까지 ${totalDays - progressDays}일 남음",
-            style: const TextStyle(fontSize: 12, color: AppColors.primary),
+            "다음 절기까지 ${totalDays - progressDays}일",
+            style: TextStyle(fontSize: 12, color: AppColors.textPrimaryOf(context)),
           )
         ],
       ),

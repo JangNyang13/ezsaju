@@ -1,3 +1,4 @@
+import 'package:ezsaju/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import '../models/calendar_day.dart';
 import '../models/profile_model.dart';
@@ -51,10 +52,10 @@ class ProfileHeader extends StatelessWidget {
           child: Center(
             child: Text(
               profile.name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: AppColors.textPrimaryOf(context),
               ),
             ),
           ),
@@ -66,12 +67,12 @@ class ProfileHeader extends StatelessWidget {
             children: [
               Text(
                 '양력: $solarStr $timeStr',
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
+                style: TextStyle(fontSize: 16, color: AppColors.textPrimaryOf(context)),
               ),
               const SizedBox(height: 4),
               Text(
                 '음력: $lunarStr  ($genderStr)',
-                style: const TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(fontSize: 16, color: AppColors.textPrimaryOf(context)),
               ),
             ],
           ),

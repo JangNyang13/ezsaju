@@ -98,16 +98,17 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: AppColors.cardOf(context),
         appBar: AppBar(
           title: const Text('사주 조회'),
           centerTitle: true,
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.cardOf(context),
         ),
         body: profile == null
-            ? const Center(
+            ? Center(
           child: Text(
             '⚠️ 설정에서 프로필을 선택하세요.',
-            style: TextStyle(fontSize: 16, color: Colors.black54),
+            style: TextStyle(fontSize: 16, color: AppColors.textPrimaryOf(context)),
           ),
         )
             : _loading
@@ -121,110 +122,113 @@ class _SajuViewerScreenState extends ConsumerState<SajuViewerScreen> {
             final lunar = snapshot.data!;
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // 이름 + 프로필 헤더
-                  ProfileHeader(profile: profile, lunar: lunar),
-
-                  const Divider(
-                    height: 15,
-                    thickness: 1,
-                    color: AppColors.primary,
-                    indent: 8,
-                    endIndent: 8,
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  if (_saju == null)
-                    const Text('사주 데이터를 불러오는 중입니다...')
-                  else ...[
-                    // 사주팔자 및 신살
-                    SajuBoxView(saju: _saju!, profile: profile),
-
-                    // 공망 표시
-                    Builder(builder: (_) {
-                      final sinsal = SinsalEngine.interpret(_saju!);
-                      final gongInfo =
-                      sinsal['공망정보'] as Map<String, List<String>>?;
-                      if (gongInfo == null) return const SizedBox.shrink();
-
-                      final yearGong = gongInfo['년공망']?.join(', ') ?? '';
-                      final dayGong = gongInfo['일공망']?.join(', ') ?? '';
-
-                      return Padding(
-                        padding:
-                        const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              '(일)공망 : $dayGong   (년)공망 : $yearGong',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.black87,
-                                height: 1.6,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-
-                    // =======================
-                    // 🔹 조후(선·차용) 해석 영역
-                    // =======================
-                    FutureBuilder(
-                      future: JoyongRuleLoader.load(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        final rules = snapshot.data!;
-                        final rule =
-                        rules[_saju!.dayStem]?[_saju!.monthBranch];
-
-                        if (rule == null) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Text(
-                              '조후 규칙이 정의되지 않은 사주입니다.',
-                              style: TextStyle(fontSize: 13, color: Colors.black54),
-                            ),
-                          );
-                        }
-
-                        final result = JoyongEvaluator.evaluate(_saju!, rule);
-
-                        return JoyongResultView(result: result);
-                      },
-                    ),
-                    // =======================
-                    // 🔹 조후 영역 끝
-                    // =======================
-
-                    const Divider(
+              child: Container(
+                color: AppColors.cardOf(context),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 이름 + 프로필 헤더
+                    ProfileHeader(profile: profile, lunar: lunar),
+                
+                    Divider(
                       height: 15,
                       thickness: 1,
-                      color: AppColors.primary,
+                      color: AppColors.textPrimaryOf(context),
                       indent: 8,
                       endIndent: 8,
                     ),
-
-                    // 대운 / 세운 / 월운
-                    DaewoonSection(
-                      saju: _saju!,
-                      birthDate: profile.birthDate,
-                      isMale: profile.gender == '남',
-                    ),
+                
+                    const SizedBox(height: 12),
+                
+                    if (_saju == null)
+                      const Text('사주 데이터를 불러오는 중입니다...')
+                    else ...[
+                      // 사주팔자 및 신살
+                      SajuBoxView(saju: _saju!, profile: profile),
+                
+                      // 공망 표시
+                      Builder(builder: (_) {
+                        final sinsal = SinsalEngine.interpret(_saju!);
+                        final gongInfo =
+                        sinsal['공망정보'] as Map<String, List<String>>?;
+                        if (gongInfo == null) return const SizedBox.shrink();
+                
+                        final yearGong = gongInfo['년공망']?.join(', ') ?? '';
+                        final dayGong = gongInfo['일공망']?.join(', ') ?? '';
+                
+                        return Padding(
+                          padding:
+                          const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                '(일)공망 : $dayGong   (년)공망 : $yearGong',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textPrimaryOf(context),
+                                  height: 1.6,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                
+                      // =======================
+                      // 🔹 조후(선·차용) 해석 영역
+                      // =======================
+                      FutureBuilder(
+                        future: JoyongRuleLoader.load(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                
+                          final rules = snapshot.data!;
+                          final rule =
+                          rules[_saju!.dayStem]?[_saju!.monthBranch];
+                
+                          if (rule == null) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '조후 규칙이 정의되지 않은 사주입니다.',
+                                style: TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context)),
+                              ),
+                            );
+                          }
+                
+                          final result = JoyongEvaluator.evaluate(_saju!, rule);
+                
+                          return JoyongResultView(result: result);
+                        },
+                      ),
+                      // =======================
+                      // 🔹 조후 영역 끝
+                      // =======================
+                
+                      Divider(
+                        height: 15,
+                        thickness: 1,
+                        color: AppColors.textPrimaryOf(context),
+                        indent: 8,
+                        endIndent: 8,
+                      ),
+                
+                      // 대운 / 세운 / 월운
+                      DaewoonSection(
+                        saju: _saju!,
+                        birthDate: profile.birthDate,
+                        isMale: profile.gender == '남',
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             );
           },

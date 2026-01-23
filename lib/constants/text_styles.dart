@@ -1,38 +1,40 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// EZ 사주 앱의 전역 텍스트 스타일 모음
+/// EZ 사주 앱의 전역 텍스트 스타일 모음 (테마 대응 버전)
 class AppTextStyles {
-  static const titleLarge = TextStyle(
+  // 기본 스타일 - context 기반 버전
+  static TextStyle titleLarge(BuildContext context) => TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryOf(context),
   );
 
-  static const titleMedium = TextStyle(
+  static TextStyle titleMedium(BuildContext context) => TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryOf(context),
   );
 
-  static const body = TextStyle(
+  static TextStyle body(BuildContext context) => TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
+    color: AppColors.textPrimaryOf(context),
   );
 
-  static const bodySecondary = TextStyle(
+  static TextStyle bodySecondary(BuildContext context) => TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryOf(context),
   );
 
-  static const caption = TextStyle(
+  static TextStyle caption(BuildContext context) => TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w300,
-    color: AppColors.textSecondary,
+    color: AppColors.textSecondaryOf(context),
   );
 
+  // 육십갑자용 (기존 그대로 유지)
   static TextStyle sixtyGapja(Color color) {
     return TextStyle(
       fontFamily: 'SourceHanSansSC',
@@ -43,5 +45,4 @@ class AppTextStyles {
       letterSpacing: 0.5,
     );
   }
-
 }

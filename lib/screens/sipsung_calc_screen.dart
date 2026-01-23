@@ -120,7 +120,7 @@ class _SipsungCalcScreenState extends State<SipsungCalcScreen> {
               children: [
                 Text(
                   key,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -178,7 +178,7 @@ class _SipsungCalcScreenState extends State<SipsungCalcScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("십성 계산 도구"),
+        title: const Text("십성 보조 도구"),
         centerTitle: true,
       ),
       body: Column(
@@ -186,18 +186,42 @@ class _SipsungCalcScreenState extends State<SipsungCalcScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("일간"),
-              SizedBox(width: 8),
+              const Text("일간"),
+              const SizedBox(width: 8),
               DropdownButton<String>(
                 value: dayStem,
                 hint: const Text("일간 선택"),
-                items: stems.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+                dropdownColor: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF4C4C4C) // ✅ 다크모드용 메뉴 배경
+                    : Colors.white,             // ✅ 라이트모드용 메뉴 배경
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white            // ✅ 다크모드 → 흰색 텍스트
+                      : Colors.black,           // ✅ 라이트모드 → 검정 텍스트
+                  fontSize: 16,
+                ),
+                items: stems
+                    .map(
+                      (s) => DropdownMenuItem(
+                    value: s,
+                    child: Text(
+                      s,
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                )
+                    .toList(),
                 onChanged: (v) {
                   setState(() => dayStem = v);
                   calculate();
                 },
               ),
             ],
+
           ),
 
           Expanded(

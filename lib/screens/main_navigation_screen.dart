@@ -1,6 +1,7 @@
 // lib/screens/main_navigation_screen.dart
 import 'package:ezsaju/screens/saju_entry_screen.dart';
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import 'daily_calendar_screen.dart';
 import 'daily_info_screen.dart';
 import 'settings_screen.dart';
@@ -57,22 +58,34 @@ class MainNavigationScreenState extends State<MainNavigationScreen>
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final bg = scheme.surfaceContainerHighest;
-    final active = scheme.primary;
-    final inactive = scheme.secondary;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // 기존 색감 유지하되, 다크모드에서는 반전
+    final backgroundColor = isDark
+        ? AppColors.primary // 기존 진회색 → 바탕으로 반전
+        : AppColors.background; // 라이트 → 고급 흰색 유지
+
+    final activeColor = isDark
+        ? AppColors.yang // 흰색 계열
+        : AppColors.primary; // 진회색 계열 유지
+
+    final inactiveColor = isDark
+        ? AppColors.secondary.withValues(alpha: 0.7) // 연한 회색
+        : AppColors.secondary; // 기존 색감 유지
 
     return Scaffold(
       body: SafeArea(child: _pages[_selectedIndex]),
       bottomNavigationBar: SafeArea(
         child: _buildBubbledNavBar(
-          activeColor: active,
-          inactiveColor: inactive,
-          backgroundColor: bg,
+          activeColor: activeColor,
+          inactiveColor: inactiveColor,
+          backgroundColor: backgroundColor,
         ),
       ),
     );
   }
+
 
   // 🔹 BubbledNavBar 내부 코드 통합
   Widget _buildBubbledNavBar({
