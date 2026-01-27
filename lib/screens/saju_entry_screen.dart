@@ -277,7 +277,7 @@ class ProfileListView extends StatelessWidget {
             child: ListTile(
               onTap: () => onOpen(p), // 🔹 타일 전체 클릭 가능
               leading: CircleAvatar(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.textPrimaryOf(context),
                 child: Text(p.name.characters.first),
               ),
               title: Text(p.name),

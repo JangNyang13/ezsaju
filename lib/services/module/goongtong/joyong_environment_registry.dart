@@ -11,6 +11,14 @@ joyongEnvironmentRegistry = {
   '甲': {
     '寅': [//==================================================================
 
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
+
       /// 1. 병·계 없음 → 음양 조화 부족
       JoyongEnvironmentRule(
         id: 'gap_in_no_bing_gui_neg',
@@ -151,6 +159,14 @@ joyongEnvironmentRegistry = {
     ],
     '卯': [//==================================================================
 
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_myo_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
+
       /// 1. 경금 존재 → 양인가살, 소귀
       JoyongEnvironmentRule(
         id: 'gap_myo_gyeong_small_honor_pos',
@@ -196,6 +212,14 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '辰': [//==================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_jin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
+
       /// 1. 경·임 동시 존재 → 음양 조화
       JoyongEnvironmentRule(
         id: 'gap_jin_gyeong_im_harmony_pos',
@@ -263,6 +287,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '巳': [//==================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 경 + 신 2개 이상 → 금기세 과중
       JoyongEnvironmentRule(
@@ -343,6 +374,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '午': [//==================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_oh_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 계 존재 → 화기 보호
       JoyongEnvironmentRule(
@@ -489,6 +527,13 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '未': [//==================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_oh_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 계 존재 → 화기 보호
       JoyongEnvironmentRule(
@@ -636,6 +681,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '申': [//==================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 정·경 모두 존재 → 방천화극, 완전한 창
       JoyongEnvironmentRule(
@@ -748,6 +800,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [//=================================================================
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_you_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 정 1개
       JoyongEnvironmentRule(
@@ -858,6 +917,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '戌': [
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_sul_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 정 존재
       JoyongEnvironmentRule(
@@ -995,6 +1061,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '亥': [
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 경·정·무 모두 존재 → 거탁류청
       JoyongEnvironmentRule(
@@ -1045,6 +1118,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '子': [
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_ja_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 경·정·사·인 모두 존재
       JoyongEnvironmentRule(
@@ -1084,6 +1164,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '丑': [
+      /// [갑] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'gap_chuk_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('甲'),
+      ),
 
       /// 1. 경·정 모두 존재
       JoyongEnvironmentRule(
@@ -1144,6 +1231,13 @@ joyongEnvironmentRegistry = {
   /// =========================
   '乙': {
     '寅': [
+      /// [을] 존재 (총론)
+      JoyongEnvironmentRule(
+        id: 'eul_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) =>
+            ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병·계 모두 존재
       JoyongEnvironmentRule(
@@ -1200,6 +1294,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '卯': [
+      /// [을] 존재 (총론) - 묘월
+      JoyongEnvironmentRule(
+        id: 'eul_myo_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병·계 모두 있고 경 없음
       JoyongEnvironmentRule(
@@ -1283,6 +1383,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '辰': [
+      /// [을] 존재 (총론) - 진월
+      JoyongEnvironmentRule(
+        id: 'eul_jin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 계·병 모두 있고 기·경 모두 없음
       JoyongEnvironmentRule(
@@ -1376,6 +1482,13 @@ joyongEnvironmentRegistry = {
     ],
     '巳': [
 
+      /// [을] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'eul_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
+
       /// 1. 계 존재
       JoyongEnvironmentRule(
         id: 'eul_sa_gui_only_use_pos',
@@ -1434,6 +1547,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '午': [
+      /// [을] 존재 (총론) - 오월
+      JoyongEnvironmentRule(
+        id: 'eul_o_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 계 존재 (하지 이전)
       JoyongEnvironmentRule(
@@ -1501,6 +1620,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '未': [
+      /// [을] 존재 (총론) - 미월
+      JoyongEnvironmentRule(
+        id: 'eul_mi_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 을 존재 + 금수 많음
       JoyongEnvironmentRule(
@@ -1618,6 +1743,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '申': [
+      /// [을] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'eul_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 경·신·유 2개 이상
       JoyongEnvironmentRule(
@@ -1666,6 +1797,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [
+      /// [을] 존재 (총론) - 유월
+      JoyongEnvironmentRule(
+        id: 'eul_you_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병·계 모두 존재
       JoyongEnvironmentRule(
@@ -1705,6 +1842,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '戌': [
+      /// [을] 존재 (총론) - 술월
+      JoyongEnvironmentRule(
+        id: 'eul_sul_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 무 + 신 존재 (등라계갑)
       JoyongEnvironmentRule(
@@ -1744,6 +1887,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '亥': [
+      /// [을] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'eul_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병 or 무 1개 이상
       JoyongEnvironmentRule(
@@ -1833,6 +1982,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '子': [
+      /// [을] 존재 (총론) - 자월
+      JoyongEnvironmentRule(
+        id: 'eul_ja_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병 존재 + 계 없음
       JoyongEnvironmentRule(
@@ -1949,6 +2104,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '丑': [
+      /// [을] 존재 (총론) - 축월
+      JoyongEnvironmentRule(
+        id: 'eul_chuk_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('乙'),
+      ),
 
       /// 1. 병 존재 (계 투출 없음 전제)
       JoyongEnvironmentRule(
@@ -2013,6 +2174,12 @@ joyongEnvironmentRegistry = {
   /// =========================
   '丙': {
     '寅': [
+      /// [병] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'byeong_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임·경 존재
       JoyongEnvironmentRule(
@@ -2144,6 +2311,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '卯': [
+      /// [병] 존재 (총론) - 묘월
+      JoyongEnvironmentRule(
+        id: 'byeong_myo_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임 존재 + 경신금·기토 조화 + 임수 뿌리
       JoyongEnvironmentRule(
@@ -2216,6 +2389,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '辰': [
+      /// [병] 존재 (총론) - 진월
+      JoyongEnvironmentRule(
+        id: 'byeong_jin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 진·술·축·미 2개 이상 (부)
       JoyongEnvironmentRule(
@@ -2290,6 +2469,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '巳': [
+      /// [병] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'byeong_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임 존재 (긍)
       JoyongEnvironmentRule(
@@ -2390,6 +2575,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '午': [
+      /// [병] 존재 (총론) - 오월
+      JoyongEnvironmentRule(
+        id: 'byeong_o_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임·경 모두 존재 (긍)
       JoyongEnvironmentRule(
@@ -2493,6 +2684,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '未': [
+      /// [병] 존재 (총론) - 미월
+      JoyongEnvironmentRule(
+        id: 'byeong_mi_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 경·임 모두 존재 (긍)
       JoyongEnvironmentRule(
@@ -2555,6 +2752,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '申': [
+      /// [병] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'byeong_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임 존재 (긍)
       JoyongEnvironmentRule(
@@ -2618,6 +2821,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [
+      /// [병] 존재 (총론) - 유월
+      JoyongEnvironmentRule(
+        id: 'byeong_yu_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 병·사 2개 이상 + 임 존재 (긍)
       JoyongEnvironmentRule(
@@ -2692,6 +2901,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '戌': [
+      /// [병] 존재 (총론) - 술월
+      JoyongEnvironmentRule(
+        id: 'byeong_sul_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 갑·임 모두 존재 (긍)
       JoyongEnvironmentRule(
@@ -2776,6 +2991,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '亥': [
+      /// [병] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'byeong_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
+
       /// 1. 갑·무·경 모두 존재 (긍)
       JoyongEnvironmentRule(
         id: 'byeong_hae_gap_mu_gyeong_leader_pos',
@@ -2830,6 +3052,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '子': [
+      /// [병] 존재 (총론) - 자월
+      JoyongEnvironmentRule(
+        id: 'byeong_ja_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임 존재 (긍)
       JoyongEnvironmentRule(
@@ -2906,6 +3134,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '丑': [
+      /// [병] 존재 (총론) - 축월
+      JoyongEnvironmentRule(
+        id: 'byeong_chuk_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丙'),
+      ),
 
       /// 1. 임 + 갑 모두 존재 (긍)
       JoyongEnvironmentRule(
@@ -2983,6 +3217,13 @@ joyongEnvironmentRegistry = {
   '丁': {
     '寅': [
 
+      /// [정] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'jeong_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
+
       /// 1. 경 존재 (긍)
       JoyongEnvironmentRule(
         id: 'jeong_in_gyeong_needed_pos',
@@ -3057,6 +3298,13 @@ joyongEnvironmentRegistry = {
 
     ],
     '卯': [
+
+      /// [정] 존재 (총론) - 묘월
+      JoyongEnvironmentRule(
+        id: 'jeong_myo_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [경][갑] 존재
       JoyongEnvironmentRule(
@@ -3169,6 +3417,12 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '辰': [
+      /// [정] 존재 (총론) - 진월
+      JoyongEnvironmentRule(
+        id: 'jeong_jin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [갑][경] 존재
       JoyongEnvironmentRule(
@@ -3246,6 +3500,13 @@ joyongEnvironmentRegistry = {
     ],
     '巳': [
 
+      /// [정] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'jeong_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
+
       /// [갑][경] 존재
       JoyongEnvironmentRule(
         id: 'jeong_sa_gap_gyeong_mokhwa_tongmyeong_pos',
@@ -3316,6 +3577,13 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '午': [
+
+      /// [정] 존재 (총론) - 오월
+      JoyongEnvironmentRule(
+        id: 'jeong_o_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [임] 존재
       JoyongEnvironmentRule(
@@ -3397,6 +3665,13 @@ joyongEnvironmentRegistry = {
     ],
     '未': [
 
+      /// [정] 존재 (총론) - 미월
+      JoyongEnvironmentRule(
+        id: 'jeong_mi_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
+
       /// [갑] 있고 지지 목국
       JoyongEnvironmentRule(
         id: 'jeong_mi_gap_mok_guk_exam_pos',
@@ -3435,6 +3710,13 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '申': [
+
+      /// [정] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'jeong_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [갑][경][병] 존재 (조후 기본)
       JoyongEnvironmentRule(
@@ -3513,6 +3795,13 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '酉': [
+
+      /// [정] 존재 (총론) - 유월
+      JoyongEnvironmentRule(
+        id: 'jeong_yu_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [갑][경][병] 존재 (조후 기본)
       JoyongEnvironmentRule(
@@ -3601,6 +3890,13 @@ joyongEnvironmentRegistry = {
     ],
     '戌': [
 
+      /// [정] 존재 (총론) - 술월
+      JoyongEnvironmentRule(
+        id: 'jeong_sul_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
+
       /// [무] + [진][술][축][미]
       JoyongEnvironmentRule(
         id: 'jeong_sul_mu_earth_overflow_neg',
@@ -3629,6 +3925,13 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '亥': [
+
+      /// [정] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'jeong_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('丁'),
+      ),
 
       /// [경][갑] 존재
       JoyongEnvironmentRule(
@@ -4000,6 +4303,12 @@ joyongEnvironmentRegistry = {
   /// =========================
   '戊': {
     '寅': [
+      /// [무] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'mu_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [병] 존재
       JoyongEnvironmentRule(
@@ -4174,6 +4483,12 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '卯': [
+      /// [무] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'mu_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [병] 존재
       JoyongEnvironmentRule(
@@ -4348,6 +4663,12 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '辰': [
+      /// [무] 존재 (총론) - 진월
+      JoyongEnvironmentRule(
+        id: 'mu_chen_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [병][갑][계] 모두 없음
       JoyongEnvironmentRule(
@@ -4505,6 +4826,12 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '巳': [
+      /// [무] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'mu_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [병][갑] 모두 존재
       JoyongEnvironmentRule(
@@ -4576,6 +4903,12 @@ joyongEnvironmentRegistry = {
       ),
     ],
     '午': [
+      /// [무] 존재 (총론) - 오월
+      JoyongEnvironmentRule(
+        id: 'mu_o_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [임][갑][병] 존재
       JoyongEnvironmentRule(
@@ -4616,6 +4949,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '未': [
+      /// [무] 존재 (총론) - 미월
+      JoyongEnvironmentRule(
+        id: 'mu_mi_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [계][병][갑] 존재
       JoyongEnvironmentRule(
@@ -4706,6 +5045,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '申': [
+      /// [무] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'mu_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [병][계][갑] 모두 존재
       JoyongEnvironmentRule(
@@ -4782,6 +5127,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [
+      /// [무] 존재 (총론) - 유월
+      JoyongEnvironmentRule(
+        id: 'mu_yu_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [무] 존재
       JoyongEnvironmentRule(
@@ -4858,6 +5209,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '戌': [
+      /// [무] 존재 (총론) - 술월
+      JoyongEnvironmentRule(
+        id: 'mu_sul_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [갑][계] 존재
       JoyongEnvironmentRule(
@@ -4935,6 +5292,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '亥': [
+      /// [무] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'mu_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [갑][병] 존재
       JoyongEnvironmentRule(
@@ -5013,6 +5376,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '子': [
+      /// [무] 존재 (총론) - 자월
+      JoyongEnvironmentRule(
+        id: 'mu_ja_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [갑][병] 존재
       JoyongEnvironmentRule(
@@ -5119,6 +5488,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '丑': [
+      /// [무] 존재 (총론) - 자월
+      JoyongEnvironmentRule(
+        id: 'mu_ja_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('戊'),
+      ),
 
       /// [갑][병] 존재
       JoyongEnvironmentRule(
@@ -5230,6 +5605,12 @@ joyongEnvironmentRegistry = {
   /// =========================
   '己': {
     '寅': [
+      /// [기] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'gi_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병] 존재
       JoyongEnvironmentRule(
@@ -5294,6 +5675,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '卯': [
+      /// [기] 존재 (총론) - 묘월
+      JoyongEnvironmentRule(
+        id: 'gi_myo_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [갑] 존재
       JoyongEnvironmentRule(
@@ -5358,6 +5745,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '辰': [
+      /// [기] 존재 (총론) - 진월
+      JoyongEnvironmentRule(
+        id: 'gi_jin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][계][갑] 존재
       JoyongEnvironmentRule(
@@ -5436,6 +5829,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '巳': [
+      /// [기] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'gi_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [계][병] 존재
       JoyongEnvironmentRule(
@@ -5506,6 +5905,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '午': [
+      /// [기] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'gi_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [계][병] 존재
       JoyongEnvironmentRule(
@@ -5576,6 +5981,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '未': [
+      /// [기] 존재 (총론) - 사월
+      JoyongEnvironmentRule(
+        id: 'gi_sa_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [계][병] 존재
       JoyongEnvironmentRule(
@@ -5646,6 +6057,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '申': [
+      /// [기] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'gi_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][계] 존재
       JoyongEnvironmentRule(
@@ -5771,6 +6188,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [
+      /// [기] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'gi_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][계] 존재
       JoyongEnvironmentRule(
@@ -5896,6 +6319,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '戌': [
+      /// [기] 존재 (총론) - 신월
+      JoyongEnvironmentRule(
+        id: 'gi_sin_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][계] 존재
       JoyongEnvironmentRule(
@@ -6021,6 +6450,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '亥': [
+      /// [기] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'gi_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][갑] 존재
       JoyongEnvironmentRule(
@@ -6105,6 +6540,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '子': [
+      /// [기] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'gi_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][갑] 존재
       JoyongEnvironmentRule(
@@ -6189,6 +6630,12 @@ joyongEnvironmentRegistry = {
 
     ],
     '丑': [
+      /// [기] 존재 (총론) - 해월
+      JoyongEnvironmentRule(
+        id: 'gi_hae_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('己'),
+      ),
 
       /// [병][갑] 존재
       JoyongEnvironmentRule(
@@ -6278,6 +6725,12 @@ joyongEnvironmentRegistry = {
   /// =========================
   '庚': {
     '寅': [
+      /// [경] 존재 (총론) - 인월
+      JoyongEnvironmentRule(
+        id: 'gyeong_in_core_theory_pos',
+        effect: EnvironmentEffect.positive,
+        condition: (ctx) => ctx.stems.contains('庚'),
+      ),
 
       /// [병][갑] 존재
       JoyongEnvironmentRule(
@@ -6992,7 +7445,6 @@ joyongEnvironmentRegistry = {
 
     ],
     '酉': [
-
       /// [경] 존재
       JoyongEnvironmentRule(
         id: 'gyeong_yu_core_theory_pos',
@@ -7408,7 +7860,6 @@ joyongEnvironmentRegistry = {
 
     ],
   },
-
   /// =========================
   /// 辛金
   /// =========================
